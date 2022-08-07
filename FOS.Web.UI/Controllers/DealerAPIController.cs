@@ -13,8 +13,7 @@ using System.Web.Http.Description;
 namespace FOS.Web.UI.Controllers
 {
     public class DealerAPIController : ApiController
-    {//
-        //
+    {
         [HttpGet]
         public List<DealerData> Get()
         {
