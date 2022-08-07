@@ -217,6 +217,9 @@
         <AssociationConnector Association="FOS_WallCoatModel.FK_BillDispatchMultiSelectListOfConsumer_Tbl_BillDistributionmultiselection" />
         <EntityTypeShape EntityType="FOS_WallCoatModel.TBL_MeterReadingLovs" Width="1.5" PointX="25.375" PointY="9.75" />
         <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_MeterredingMultiValues" Width="1.5" PointX="25.375" PointY="12.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_BillingBills" Width="1.5" PointX="27.375" PointY="0.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_ReceiptBills" Width="1.5" PointX="27.375" PointY="10.75" />
+        <EntityTypeShape EntityType="FOS_WallCoatModel.Tbl_BanksData" Width="1.5" PointX="25.375" PointY="16.75" />
         </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

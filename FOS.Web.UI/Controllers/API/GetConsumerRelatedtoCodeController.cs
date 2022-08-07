@@ -11,51 +11,66 @@ using System.Web.Http;
 
 namespace FOS.Web.UI.Controllers.API
 {
-    public class GetConsumerRelatedtoCodeController : ApiController
+    public class GetConsumerRelatedtoCodeForBanksController : ApiController
     {
 
         FOSDataModel db = new FOSDataModel();
 
-        public IHttpActionResult Get(int CityID,int AreaID,int SubDevisionID,int Code)
+        public IHttpActionResult Get(int Code)
         {
             FOSDataModel dbContext = new FOSDataModel();
             try
             {
-                var SubdivID = db.SubDivisions.Where(x => x.ID == SubDevisionID).Select(x => x.AreaIDRef).FirstOrDefault();
-                //List<RetailerData> MAinCat = new List<RetailerData>();
-                if (CityID > 0)
+                System.Net.Http.Headers.HttpRequestHeaders headers = this.Request.Headers;
+                string token = string.Empty;
+                string pwd = string.Empty;
+                if (headers.Contains("UserName"))
                 {
-                    object[] param = { CityID };
+                    token = headers.GetValues("UserName").First();
+                }
+                if (headers.Contains("Password"))
+                {
+                    pwd = headers.GetValues("Password").First();
+                }
 
-                    // RetailerData cty;
+                var validUser = db.Users.Where(x => x.UserName == token && x.Password == pwd).FirstOrDefault();
+                if (validUser != null)
+                {
 
-                    var result = dbContext.TBL_Consumers.Where(x => x.DDRID == CityID && x.WardID == AreaID  && x.ward_Digits == Code).Select(x => new
+
+                    if (Code > 0)
                     {
-                        ID=x.ID,
-                        ConsumerNo= x.ConnectionCode,
-                        DDR= dbContext.Cities.Where(z => z.ID == x.DDRID).Select(z => z.Name).FirstOrDefault(),
-                        Ward= dbContext.Areas.Where(z => z.ID == x.AreaID).Select(z => z.Name).FirstOrDefault(),
-                        ConsumerName=x.ConsumerName,
-                        Address=x.Address,
-                        MobileNo=123,
-                        AreaMarla=x.AreaMarla,
-                        Lattitude=x.Latitude,
-                        Longitude=x.Longitude,
-                        MeterNo=x.MeterNo,
-                        ConnectionType=dbContext.ConnectionTypes.Where(z=>z.ID==x.ConnectionCode).Select(z=>z.ConnectionTypeName).FirstOrDefault()
+                        object[] param = { Code };
 
-                    }).FirstOrDefault();
+                        // RetailerData cty;
 
-
-                    if (result != null)
-                    {
-                        return Ok(new
+                        var result = dbContext.TBL_Consumers.Where(x => x.ConsumerID == Code).Select(x => new
                         {
-                            ConsumerInfo = result
+                            ID = x.ID,
+                            ConsumerNo = x.ConnectionCode,
+                            DDR = dbContext.Cities.Where(z => z.ID == x.DDRID).Select(z => z.Name).FirstOrDefault(),
+                            Ward = dbContext.Areas.Where(z => z.ID == x.AreaID).Select(z => z.Name).FirstOrDefault(),
+                            ConsumerName = x.ConsumerName,
+                            Address = x.Address,
+                            MobileNo = 123,
+                            AreaMarla = x.AreaMarla,
+                            Lattitude = x.Latitude,
+                            Longitude = x.Longitude,
+                            MeterNo = x.MeterNo,
+                            ConnectionType = dbContext.ConnectionTypes.Where(z => z.ID == x.ConnectionCode).Select(z => z.ConnectionTypeName).FirstOrDefault()
 
-                        });
+                        }).FirstOrDefault();
+
+
+                        if (result != null)
+                        {
+                            return Ok(new
+                            {
+                                ConsumerInfo = result
+
+                            });
+                        }
                     }
-
                 }
 
             }

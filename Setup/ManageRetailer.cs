@@ -598,34 +598,35 @@ namespace FOS.Setup
             var today = DateTime.UtcNow.AddHours(5);
             var month = new DateTime(today.Year, today.Month, 1);
             var first = month.AddMonths(1);
-            
+            var From = Convert.ToDateTime("2022-06-01");
+            var to = Convert.ToDateTime("2022-06-10");
             try
             {
                 using (FOSDataModel dbContext = new FOSDataModel())
                 {
                     //var SubdivID = dbContext.SubDivisions.Where(x => x.ID == RegionID).Select(x => x.AreaIDRef).FirstOrDefault();
-                    retailerData = dbContext.JobsDetails.Where(u => u.Job.CityID == CityID && u.Job.ZoneID == ZoneID && u.JobDate >= month && u.JobDate <= first
+                    retailerData = dbContext.JobsDetails.Where(u => u.Job.CityID == CityID && u.Job.ZoneID == ZoneID && u.JobDate >= From && u.JobDate <= to
                              && u.Status == true && u.IsbillDistributrd==true
                             )
                              .Select(
                                  u => new RetailerData
                                  {
                                      ID = u.ID,
-                                     Name = dbContext.TBL_Consumers.Where(x => x.ID == u.ConsumerID).Select(x => x.ConsumerName).FirstOrDefault(),
+                                    // Name = dbContext.TBL_Consumers.Where(x => x.ID == u.ConsumerID).Select(x => x.ConsumerName).FirstOrDefault(),
                                      ShopName = dbContext.TBL_Consumers.Where(x => x.ID == u.ConsumerID).Select(x => x.ConsumerName).FirstOrDefault(),
-                                     ClientID = dbContext.TBL_Consumers.Where(x => x.ID == u.ConsumerID).Select(x => x.ConsumerID).FirstOrDefault(),
+                                     //ClientID = dbContext.TBL_Consumers.Where(x => x.ID == u.ConsumerID).Select(x => x.ConsumerID).FirstOrDefault(),
                                      Location = u.LatitudeForBillDistribution + "," + u.LongitudeForBillDistribution,
                                      Latitude = u.LatitudeForBillDistribution,
                                      Longitude = u.LongitudeForBillDistribution,
-                                     Address = dbContext.TBL_Consumers.Where(x => x.ID == u.ConsumerID).Select(x => x.Address).FirstOrDefault(),
+                                     //Address = dbContext.TBL_Consumers.Where(x => x.ID == u.ConsumerID).Select(x => x.Address).FirstOrDefault(),
                                      // DealerName = u.Dealer.Name,
-                                     SaleOfficerName = dbContext.SaleOfficers.Where(x => x.ID == u.SalesOficerID).Select(x => x.Name).FirstOrDefault(),
+                                     //SaleOfficerName = dbContext.SaleOfficers.Where(x => x.ID == u.SalesOficerID).Select(x => x.Name).FirstOrDefault(),
                                      MultiSelectID = dbContext.BillDisMultiSelects.Where(x => x.JobID == u.JobID).Select(x => x.MultiselectID).FirstOrDefault(),
-                                     LatitudeForMultiselect = dbContext.BillDisMultiSelects.Where(x => x.JobID == u.JobID).Select(x => x.Latitude).FirstOrDefault(),
+                                    LatitudeForMultiselect = dbContext.BillDisMultiSelects.Where(x => x.JobID == u.JobID).Select(x => x.Latitude).FirstOrDefault(),
                                      LongitudeForMultiselect = dbContext.BillDisMultiSelects.Where(x => x.JobID == u.JobID).Select(x => x.Longitude).FirstOrDefault(),
-                                     LocationForMultiselect = dbContext.BillDisMultiSelects.Where(x => x.JobID == u.JobID).Select(x => x.Latitude).FirstOrDefault() + "," + dbContext.BillDisMultiSelects.Where(x => x.JobID == u.JobID).Select(x => x.Longitude).FirstOrDefault(),
+                                     //LocationForMultiselect = dbContext.BillDisMultiSelects.Where(x => x.JobID == u.JobID).Select(x => x.Latitude).FirstOrDefault() + "," + dbContext.BillDisMultiSelects.Where(x => x.JobID == u.JobID).Select(x => x.Longitude).FirstOrDefault(),
                                      AreaName = u.Area.Name,
-                                     TotalConsumers= dbContext.TBL_Consumers.Where(x => x.DDRID == CityID && x.WardID == ZoneID).Count(),
+                                    // TotalConsumers= dbContext.TBL_Consumers.Where(x => x.DDRID == CityID && x.WardID == ZoneID).Count(),
 
                 }).ToList();
 

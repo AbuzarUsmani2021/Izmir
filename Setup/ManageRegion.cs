@@ -419,7 +419,71 @@ namespace FOS.Setup
         }
 
 
+        public static int AddUpdateBillAmount(RegionData obj, int ID)
+        {
+            int Res = 0;
 
+            try
+            {
+                using (TransactionScope scope = new TransactionScope())
+                {
+                    using (FOSDataModel dbContext = new FOSDataModel())
+                    {
+                        Tbl_ReceiptBills RegionObj = new Tbl_ReceiptBills();
+
+                        var datas = dbContext.Tbl_BillingBills.Where(x => x.ConsumerID == obj.ConsumerNo && x.Status == "U" && x.BillingPeriodStatus == true).FirstOrDefault();
+                        if (datas != null)
+                        {
+
+
+                            datas.Status = "P";
+
+                            RegionObj.BillID = datas.BillID;
+                            RegionObj.ReceiveAmount = obj.ConsumerID;
+                            RegionObj.PaidDate = DateTime.Now;
+                            RegionObj.Status = true;
+                            RegionObj.BankId = 1;
+                            RegionObj.BillingMonth = datas.BillingMonth;
+                            RegionObj.ConsumerName = obj.ConsumerName;
+                            RegionObj.ConsumerNo = obj.ConsumerNo;
+                            RegionObj.BillIssueDate = Convert.ToDateTime(obj.BillIssueDate);
+                            RegionObj.DueDate = Convert.ToDateTime(obj.DueDate);
+                            RegionObj.AmountDue = datas.AmountDue;
+                            RegionObj.AmountAfterDueDate = datas.AmountAfterDueDate;
+                            RegionObj.BillStatus = "P";
+                            RegionObj.BillingPeriodTitle = datas.BillingPeriodTitle;
+                            RegionObj.UserID = ID;
+
+                            dbContext.Tbl_ReceiptBills.Add(RegionObj);
+
+
+
+                            dbContext.SaveChanges();
+
+                            Res = 1;
+                            scope.Complete();
+                        }
+                        else
+                        {
+                            Res = 2;
+                        }
+                    }
+                }
+            }
+            catch (Exception exp)
+            {
+                Log.Instance.Error(exp, "Add Region Failed");
+                Res = 0;
+                if (exp.InnerException.InnerException.Message.Contains("Short Code Region"))
+                {
+                    // Res = 2 Is For Unique Constraint Error...
+                    Res = 3;
+                    return Res;
+                }
+                return Res;
+            }
+            return Res;
+        }
 
 
         // Delete Region ...

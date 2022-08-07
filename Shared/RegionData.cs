@@ -12,7 +12,9 @@ namespace FOS.Shared
     {
         public int TID { get; set; }
         public int RegionID { get; set; }
+        public int ConsumerID { get; set; }
 
+        public int ConsumerNo { get; set; }
         [Required(ErrorMessage = "* Required")]
         public int TerritoryID { get; set; }
         public int ID { get; set; }
@@ -21,7 +23,11 @@ namespace FOS.Shared
         [Required(ErrorMessage = "* Required")]
         public string Name { get; set; }
 
-
+        public string ConsumerName { get; set; }
+        public string BillIssueDate { get; set; }
+        public string BillPeriodTitle { get; set; }
+        public int AmountDue { get; set; }
+        public string DueDate { get; set; }
         [DisplayName("Region Code: *")]
         [Required(ErrorMessage = "* Required")]
         public string ShortCode { get; set; }

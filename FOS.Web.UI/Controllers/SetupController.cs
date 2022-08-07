@@ -891,6 +891,99 @@ namespace FOS.Web.UI.Controllers
         #endregion ActivityPurpose
 
 
+        #region Billing
+
+        [CustomAuthorize]
+        //View Work...
+        public ActionResult UpdateBilling()
+        {
+            return View();
+        }
+
+
+        public JsonResult GetBillingData(int ConsumerID)
+        {
+            FOSDataModel db = new FOSDataModel();
+            try
+            {
+                var data = db.Tbl_BillingBills.Where(x => x.ConsumerID == ConsumerID && x.Status == "U" && x.BillingPeriodStatus == true).FirstOrDefault();
+             
+              
+                return Json(data);
+            }
+            catch (Exception ex)
+            {
+                return Json("2");
+            }
+
+
+        }
+
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult AddUpdateBillingData([Bind(Exclude = "TID")] RegionData newRegion)
+        {
+            var userID = Convert.ToInt32(Session["UserID"]);
+            Boolean boolFlag = true;
+            ValidationResult results = new ValidationResult();
+            try
+            {
+                if (newRegion != null)
+                {
+                    if (newRegion.RegionID == 0)
+                    {
+                        RegionValidator validator = new RegionValidator();
+                        results = validator.Validate(newRegion);
+                        boolFlag = results.IsValid;
+                    }
+
+                    if (boolFlag)
+                    {
+                        int Response = ManageRegion.AddUpdateBillAmount(newRegion, userID);
+
+                        if (Response == 1)
+                        {
+                            return Content("1");
+                        }
+                        else if (Response == 2)
+                        {
+                            return Content("2");
+                        }
+                        else
+                        {
+                            return Content("0");
+                        }
+                    }
+                    else
+                    {
+                        IList<ValidationFailure> failures = results.Errors;
+                        StringBuilder sb = new StringBuilder();
+                        sb.Append(String.Format("{0}:{1}", "*** Error ***", "<br/>"));
+                        foreach (ValidationFailure failer in results.Errors)
+                        {
+                            sb.AppendLine(String.Format("{0}:{1}{2}", failer.PropertyName, failer.ErrorMessage, "<br/>"));
+                            Response.StatusCode = 422;
+                            return Json(new { errors = sb.ToString() });
+                        }
+                    }
+                }
+
+                return Content("0");
+            }
+            catch (Exception exp)
+            {
+                return Content("Exception : " + exp.Message);
+            }
+        }
+
+
+
+
+
+        #endregion
+
         [CustomAuthorize]
         public ActionResult SchemeInfo()
         {

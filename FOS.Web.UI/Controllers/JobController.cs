@@ -686,7 +686,7 @@ namespace FOS.Web.UI.Controllers
             return Json(result);
         }
 
-
+        [HttpPost]
         public JsonResult GetAllWardsSelectOption(int regionalHeadId)
         {
             var result = FOS.Setup.ManageJobs.GetAllWardsSelectOption(regionalHeadId);

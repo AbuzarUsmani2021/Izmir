@@ -1293,6 +1293,16 @@ warning 6002: The table/view 'WasaBilling.dbo.Student' does not have a primary k
           <Property Name="IsDeleted" Type="bit" Nullable="false" />
           <Property Name="RegionID" Type="int" />
         </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'WasaBilling.dbo.Tbl_BanksData' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="Tbl_BanksData">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="30" />
+          <Property Name="Status" Type="bit" />
+        </EntityType>
         <EntityType Name="Tbl_BillDistributionmultiselection">
           <Key>
             <PropertyRef Name="ID" />
@@ -1300,6 +1310,23 @@ warning 6002: The table/view 'WasaBilling.dbo.Student' does not have a primary k
           <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="varchar" MaxLength="50" />
           <Property Name="IsActive" Type="bit" />
+        </EntityType>
+        <EntityType Name="Tbl_BillingBills">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="BillID" Type="int" />
+          <Property Name="ConsumerID" Type="int" />
+          <Property Name="ConsumerName" Type="varchar" MaxLength="50" />
+          <Property Name="BillingMonth" Type="datetime" />
+          <Property Name="DueDate" Type="datetime" />
+          <Property Name="AmountDue" Type="int" />
+          <Property Name="AmountAfterDueDate" Type="int" />
+          <Property Name="Status" Type="varchar" MaxLength="5" />
+          <Property Name="BiilingPeriod" Type="datetime" />
+          <Property Name="BillingPeriodStatus" Type="bit" />
+          <Property Name="BillingPeriodTitle" Type="varchar" MaxLength="50" />
         </EntityType>
         <EntityType Name="Tbl_ComplaintHistory">
           <Key>
@@ -1418,6 +1445,27 @@ warning 6002: The table/view 'WasaBilling.dbo.Student' does not have a primary k
           <Property Name="JobID" Type="int" />
           <Property Name="Latitude" Type="decimal" Precision="18" Scale="10" />
           <Property Name="Longitude" Type="decimal" Precision="18" Scale="10" />
+        </EntityType>
+        <EntityType Name="Tbl_ReceiptBills">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="BillID" Type="int" />
+          <Property Name="ReceiveAmount" Type="int" />
+          <Property Name="PaidDate" Type="datetime" />
+          <Property Name="Status" Type="bit" />
+          <Property Name="BankId" Type="int" />
+          <Property Name="BillingMonth" Type="datetime" />
+          <Property Name="ConsumerNo" Type="int" />
+          <Property Name="ConsumerName" Type="varchar" MaxLength="50" />
+          <Property Name="BillIssueDate" Type="datetime" />
+          <Property Name="DueDate" Type="datetime" />
+          <Property Name="AmountDue" Type="int" />
+          <Property Name="AmountAfterDueDate" Type="int" />
+          <Property Name="BillStatus" Type="varchar" MaxLength="5" />
+          <Property Name="BillingPeriodTitle" Type="varchar" MaxLength="50" />
+          <Property Name="UserID" Type="int" />
         </EntityType>
         <EntityType Name="Tbl_RetailerClass">
           <Key>
@@ -4146,6 +4194,7 @@ warning 6002: The table/view 'WasaBilling.dbo.vActiveJobs' does not have a prima
           <EntitySet Name="Sylabus" EntityType="Self.Sylabus" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Tbl_Access" EntityType="Self.Tbl_Access" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Tbl_BillDistributionmultiselection" EntityType="Self.Tbl_BillDistributionmultiselection" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Tbl_BillingBills" EntityType="Self.Tbl_BillingBills" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Tbl_ComplaintHistory" EntityType="Self.Tbl_ComplaintHistory" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TBL_Consumers" EntityType="Self.TBL_Consumers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Tbl_FollowupReasons" EntityType="Self.Tbl_FollowupReasons" Schema="dbo" store:Type="Tables" />
@@ -4153,6 +4202,7 @@ warning 6002: The table/view 'WasaBilling.dbo.vActiveJobs' does not have a prima
           <EntitySet Name="Tbl_MasterStock" EntityType="Self.Tbl_MasterStock" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TBL_MeterReadingLovs" EntityType="Self.TBL_MeterReadingLovs" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Tbl_MeterredingMultiValues" EntityType="Self.Tbl_MeterredingMultiValues" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Tbl_ReceiptBills" EntityType="Self.Tbl_ReceiptBills" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Tbl_RetailerClass" EntityType="Self.Tbl_RetailerClass" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Tbl_RetailerType" EntityType="Self.Tbl_RetailerType" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TBL_RouteSelection" EntityType="Self.TBL_RouteSelection" Schema="dbo" store:Type="Tables" />
@@ -4212,6 +4262,13 @@ warning 6002: The table/view 'WasaBilling.dbo.vActiveJobs' does not have a prima
     [Student].[ComplainttypeID] AS [ComplainttypeID], 
     [Student].[InitialRemarks] AS [InitialRemarks]
     FROM [dbo].[Student] AS [Student]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="Tbl_BanksData" EntityType="Self.Tbl_BanksData" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [Tbl_BanksData].[ID] AS [ID], 
+    [Tbl_BanksData].[Name] AS [Name], 
+    [Tbl_BanksData].[Status] AS [Status]
+    FROM [dbo].[Tbl_BanksData] AS [Tbl_BanksData]</DefiningQuery>
           </EntitySet>
           <EntitySet Name="vActiveJobs" EntityType="Self.vActiveJobs" store:Type="Views" store:Schema="dbo">
             <DefiningQuery>SELECT 
@@ -6405,6 +6462,9 @@ warning 6002: The table/view 'WasaBilling.dbo.vActiveJobs' does not have a prima
             <Parameter Name="DDRID" Mode="In" Type="Int32" />
             <Parameter Name="AreaID" Mode="In" Type="Int32" />
           </FunctionImport>
+          <EntitySet Name="Tbl_BillingBills" EntityType="FOS_WallCoatModel.Tbl_BillingBills" />
+          <EntitySet Name="Tbl_ReceiptBills" EntityType="FOS_WallCoatModel.Tbl_ReceiptBills" />
+          <EntitySet Name="Tbl_BanksData" EntityType="FOS_WallCoatModel.Tbl_BanksData" />
         </EntityContainer>
         <ComplexType Name="AreasRelatedtoCities_Result">
           <Property Type="Int32" Name="SaleOfficerID" Nullable="true" />
@@ -12138,6 +12198,52 @@ warning 6002: The table/view 'WasaBilling.dbo.vActiveJobs' does not have a prima
           <Property Type="String" Name="MultiSelectOption" Nullable="true" MaxLength="50" />
           <Property Type="DateTime" Name="createdon" Nullable="true" />
         </ComplexType>
+        <EntityType Name="Tbl_BillingBills">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="BillID" Type="Int32" />
+          <Property Name="ConsumerID" Type="Int32" />
+          <Property Name="ConsumerName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="BillingMonth" Type="DateTime" Precision="3" />
+          <Property Name="DueDate" Type="DateTime" Precision="3" />
+          <Property Name="AmountDue" Type="Int32" />
+          <Property Name="AmountAfterDueDate" Type="Int32" />
+          <Property Name="Status" Type="String" MaxLength="5" FixedLength="false" Unicode="false" />
+          <Property Name="BiilingPeriod" Type="DateTime" Precision="3" />
+          <Property Name="BillingPeriodStatus" Type="Boolean" />
+          <Property Name="BillingPeriodTitle" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="Tbl_ReceiptBills">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="BillID" Type="Int32" />
+          <Property Name="ReceiveAmount" Type="Int32" />
+          <Property Name="PaidDate" Type="DateTime" Precision="3" />
+          <Property Name="Status" Type="Boolean" />
+          <Property Name="BankId" Type="Int32" />
+          <Property Name="BillingMonth" Type="DateTime" Precision="3" />
+          <Property Name="ConsumerNo" Type="Int32" />
+          <Property Name="ConsumerName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="BillIssueDate" Type="DateTime" Precision="3" />
+          <Property Name="DueDate" Type="DateTime" Precision="3" />
+          <Property Name="AmountDue" Type="Int32" />
+          <Property Name="AmountAfterDueDate" Type="Int32" />
+          <Property Name="BillStatus" Type="String" MaxLength="5" FixedLength="false" Unicode="false" />
+          <Property Name="BillingPeriodTitle" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="UserID" Type="Int32" />
+        </EntityType>
+        <EntityType Name="Tbl_BanksData">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="Status" Type="Boolean" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -16904,6 +17010,55 @@ warning 6002: The table/view 'WasaBilling.dbo.vActiveJobs' does not have a prima
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
+          <EntitySetMapping Name="Tbl_BillingBills">
+            <EntityTypeMapping TypeName="FOS_WallCoatModel.Tbl_BillingBills">
+              <MappingFragment StoreEntitySet="Tbl_BillingBills">
+                <ScalarProperty Name="BillingPeriodTitle" ColumnName="BillingPeriodTitle" />
+                <ScalarProperty Name="BillingPeriodStatus" ColumnName="BillingPeriodStatus" />
+                <ScalarProperty Name="BiilingPeriod" ColumnName="BiilingPeriod" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="AmountAfterDueDate" ColumnName="AmountAfterDueDate" />
+                <ScalarProperty Name="AmountDue" ColumnName="AmountDue" />
+                <ScalarProperty Name="DueDate" ColumnName="DueDate" />
+                <ScalarProperty Name="BillingMonth" ColumnName="BillingMonth" />
+                <ScalarProperty Name="ConsumerName" ColumnName="ConsumerName" />
+                <ScalarProperty Name="ConsumerID" ColumnName="ConsumerID" />
+                <ScalarProperty Name="BillID" ColumnName="BillID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Tbl_ReceiptBills">
+            <EntityTypeMapping TypeName="FOS_WallCoatModel.Tbl_ReceiptBills">
+              <MappingFragment StoreEntitySet="Tbl_ReceiptBills">
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="BillingPeriodTitle" ColumnName="BillingPeriodTitle" />
+                <ScalarProperty Name="BillStatus" ColumnName="BillStatus" />
+                <ScalarProperty Name="AmountAfterDueDate" ColumnName="AmountAfterDueDate" />
+                <ScalarProperty Name="AmountDue" ColumnName="AmountDue" />
+                <ScalarProperty Name="DueDate" ColumnName="DueDate" />
+                <ScalarProperty Name="BillIssueDate" ColumnName="BillIssueDate" />
+                <ScalarProperty Name="ConsumerName" ColumnName="ConsumerName" />
+                <ScalarProperty Name="ConsumerNo" ColumnName="ConsumerNo" />
+                <ScalarProperty Name="BillingMonth" ColumnName="BillingMonth" />
+                <ScalarProperty Name="BankId" ColumnName="BankId" />
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="PaidDate" ColumnName="PaidDate" />
+                <ScalarProperty Name="ReceiveAmount" ColumnName="ReceiveAmount" />
+                <ScalarProperty Name="BillID" ColumnName="BillID" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Tbl_BanksData">
+            <EntityTypeMapping TypeName="FOS_WallCoatModel.Tbl_BanksData">
+              <MappingFragment StoreEntitySet="Tbl_BanksData">
+                <ScalarProperty Name="Status" ColumnName="Status" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
