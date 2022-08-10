@@ -248,10 +248,14 @@
     <Compile Include="Common\Settings.cs" />
     <Compile Include="Common\Token\TokenAttribute.cs" />
     <Compile Include="Common\UserManager.cs" />
+    <Compile Include="Controllers\API\GetConsumerListByIDController.cs" />
     <Compile Include="Controllers\API\GetConsumerRelatedtoCodeForBanksController.cs" />
+    <Compile Include="Controllers\API\GetConsumerListController.cs" />
     <Compile Include="Controllers\API\NewConsumerController.cs" />
     <Compile Include="Controllers\API\MeterReadingMapViewController.cs" />
     <Compile Include="Controllers\API\GetCurrentRouteOfSOController.cs" />
+    <Compile Include="Controllers\API\ConsumerLatLongRegistrationController.cs" />
+    <Compile Include="Controllers\API\ConsumerMeterBillingController.cs" />
     <Compile Include="Controllers\API\RouteSelectionController.cs" />
     <Compile Include="Controllers\API\MeterReadingController.cs" />
     <Compile Include="Controllers\API\BillDispatchedController.cs" />

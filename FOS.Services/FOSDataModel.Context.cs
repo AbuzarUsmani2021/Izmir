@@ -133,6 +133,8 @@ namespace FOS.DataLayer
         public virtual DbSet<Tbl_BillingBills> Tbl_BillingBills { get; set; }
         public virtual DbSet<Tbl_ReceiptBills> Tbl_ReceiptBills { get; set; }
         public virtual DbSet<Tbl_BanksData> Tbl_BanksData { get; set; }
+        public virtual DbSet<Tbl_IZConsumers> Tbl_IZConsumers { get; set; }
+        public virtual DbSet<Tbl_IZBlocks> Tbl_IZBlocks { get; set; }
     
         [DbFunction("FOSDataModel", "fnStringList2Table")]
         public virtual IQueryable<fnStringList2Table_Result> fnStringList2Table(string list)

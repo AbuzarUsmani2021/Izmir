@@ -1161,6 +1161,12 @@
     <Compile Include="Tbl_FollowupReasons.cs">
       <DependentUpon>FOSDataModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Tbl_IZBlocks.cs">
+      <DependentUpon>FOSDataModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Tbl_IZConsumers.cs">
+      <DependentUpon>FOSDataModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="TBL_KsbVisits.cs">
       <DependentUpon>FOSDataModel.tt</DependentUpon>
     </Compile>

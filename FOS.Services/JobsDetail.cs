@@ -114,6 +114,9 @@ namespace FOS.DataLayer
         public Nullable<decimal> LatitudeForMeterreading { get; set; }
         public Nullable<decimal> LongitudeForMeterreading { get; set; }
         public Nullable<int> ConsumerID { get; set; }
+        public Nullable<decimal> MeterReading { get; set; }
+        public Nullable<decimal> PeakReading { get; set; }
+        public Nullable<decimal> OffPeakReading { get; set; }
     
         public virtual Area Area { get; set; }
         public virtual Dealer Dealer { get; set; }
