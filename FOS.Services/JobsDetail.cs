@@ -117,6 +117,15 @@ namespace FOS.DataLayer
         public Nullable<decimal> MeterReading { get; set; }
         public Nullable<decimal> PeakReading { get; set; }
         public Nullable<decimal> OffPeakReading { get; set; }
+        public Nullable<decimal> PreviousReading { get; set; }
+        public Nullable<decimal> UnitsConsumed { get; set; }
+        public Nullable<int> BillingPeriodID { get; set; }
+        public string PeakReadingPicture { get; set; }
+        public string OffPeakReadingPicture { get; set; }
+        public Nullable<decimal> ExportUnits { get; set; }
+        public string ExportUnistPicture { get; set; }
+        public string ReadingFeedback { get; set; }
+        public string Remarks { get; set; }
     
         public virtual Area Area { get; set; }
         public virtual Dealer Dealer { get; set; }

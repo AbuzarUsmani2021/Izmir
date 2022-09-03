@@ -135,6 +135,7 @@ namespace FOS.DataLayer
         public virtual DbSet<Tbl_BanksData> Tbl_BanksData { get; set; }
         public virtual DbSet<Tbl_IZConsumers> Tbl_IZConsumers { get; set; }
         public virtual DbSet<Tbl_IZBlocks> Tbl_IZBlocks { get; set; }
+        public virtual DbSet<Tbl_IZBillingPeriod> Tbl_IZBillingPeriod { get; set; }
     
         [DbFunction("FOSDataModel", "fnStringList2Table")]
         public virtual IQueryable<fnStringList2Table_Result> fnStringList2Table(string list)
@@ -4064,6 +4065,27 @@ namespace FOS.DataLayer
                 new ObjectParameter("AreaID", typeof(int));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Sp_BillDistributorDetail_Result>("Sp_BillDistributorDetail", startingDateParameter, endingDateParameter, dDRIDParameter, areaIDParameter);
+        }
+    
+        public virtual ObjectResult<Sp_MyBillingList_Result> Sp_MyBillingList(Nullable<int> regionID, Nullable<System.DateTime> dateFrom, Nullable<System.DateTime> dateTo, Nullable<int> blockID)
+        {
+            var regionIDParameter = regionID.HasValue ?
+                new ObjectParameter("RegionID", regionID) :
+                new ObjectParameter("RegionID", typeof(int));
+    
+            var dateFromParameter = dateFrom.HasValue ?
+                new ObjectParameter("dateFrom", dateFrom) :
+                new ObjectParameter("dateFrom", typeof(System.DateTime));
+    
+            var dateToParameter = dateTo.HasValue ?
+                new ObjectParameter("dateTo", dateTo) :
+                new ObjectParameter("dateTo", typeof(System.DateTime));
+    
+            var blockIDParameter = blockID.HasValue ?
+                new ObjectParameter("BlockID", blockID) :
+                new ObjectParameter("BlockID", typeof(int));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<Sp_MyBillingList_Result>("Sp_MyBillingList", regionIDParameter, dateFromParameter, dateToParameter, blockIDParameter);
         }
     }
 }

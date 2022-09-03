@@ -12,11 +12,11 @@ using System.Web.Http;
 
 namespace FOS.Web.UI.Controllers.API
 {
-    public class MyOrderListSummerySOWiseController : ApiController
+    public class MyBillingListController : ApiController
     {
         FOSDataModel db = new FOSDataModel();
 
-        public IHttpActionResult Get(int ConsumerID)
+        public IHttpActionResult Get(int SOID,int BlockID)
         {
             FOSDataModel dbContext = new FOSDataModel();
             try
@@ -26,25 +26,18 @@ namespace FOS.Web.UI.Controllers.API
                 DateTime dtFromToday = dtFromTodayUtc.Date;
                 DateTime dtToToday = dtFromToday.AddDays(1);
 
-                if (ConsumerID > 0)
+                if (SOID > 0)
                 {
-                    object[] param = { ConsumerID };
+                    object[] param = { SOID };
                     
                     
-                        var result = db.JobsDetails.Where(x => x.ConsumerID == ConsumerID).OrderByDescending(x => x.ID).Select(x=>new
-                        {
-                            ID=x.ID,
-                            PreviousReading=x.PreviousReading,
-                            PreviosUnits= (x.MeterReading-x.PreviousReading)
-
-                        }
-                        ).FirstOrDefault();
-
-                    if (result != null )
+                        var result = dbContext.Sp_MyBillingList(SOID,dtFromToday,dtToToday,BlockID).ToList();
+                    
+                    if (result != null && result.Count > 0)
                     {
                         return Ok(new
                         {
-                            PreviousReading = result
+                            MyReadingList = result
                             
                         });
                     }
@@ -58,7 +51,7 @@ namespace FOS.Web.UI.Controllers.API
             object[] paramm = {};
             return Ok(new
             {
-                PreviousReading = paramm
+                MyReadingList = paramm
             });
 
         }

@@ -603,6 +603,15 @@
           <Property Name="MeterReading" Type="decimal" Precision="18" Scale="4" />
           <Property Name="PeakReading" Type="decimal" Precision="18" Scale="4" />
           <Property Name="OffPeakReading" Type="decimal" Precision="18" Scale="4" />
+          <Property Name="PreviousReading" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="UnitsConsumed" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="BillingPeriodID" Type="int" />
+          <Property Name="PeakReadingPicture" Type="varchar" MaxLength="250" />
+          <Property Name="OffPeakReadingPicture" Type="varchar" MaxLength="250" />
+          <Property Name="ExportUnits" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="ExportUnistPicture" Type="varchar" MaxLength="250" />
+          <Property Name="ReadingFeedback" Type="varchar" MaxLength="250" />
+          <Property Name="Remarks" Type="varchar" MaxLength="550" />
         </EntityType>
         <EntityType Name="JobsDetail_HTR">
           <Key>
@@ -1399,6 +1408,15 @@ warning 6002: The table/view 'IzmirBilling.dbo.Tbl_BanksData' does not have a pr
           <Property Name="Isdeleted" Type="bit" />
           <Property Name="CreatedOn" Type="datetime" />
         </EntityType>
+        <EntityType Name="Tbl_IZBillingPeriod">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="50" />
+          <Property Name="Date" Type="datetime" />
+          <Property Name="IsActive" Type="bit" />
+        </EntityType>
         <EntityType Name="Tbl_IZBlocks">
           <Key>
             <PropertyRef Name="ID" />
@@ -1435,6 +1453,7 @@ warning 6002: The table/view 'IzmirBilling.dbo.Tbl_BanksData' does not have a pr
           <Property Name="Longitude" Type="decimal" Precision="18" Scale="10" />
           <Property Name="Location" Type="varchar" MaxLength="500" />
           <Property Name="BlockID" Type="int" />
+          <Property Name="ConsumerID" Type="varchar" MaxLength="255" />
         </EntityType>
         <EntityType Name="TBL_KsbVisits">
           <Key>
@@ -3606,6 +3625,12 @@ warning 6002: The table/view 'IzmirBilling.dbo.vActiveJobs' does not have a prim
           <Parameter Name="dateFrom" Type="date" Mode="In" />
           <Parameter Name="dateTo" Type="date" Mode="In" />
         </Function>
+        <Function Name="Sp_MyBillingList" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="RegionID" Type="int" Mode="In" />
+          <Parameter Name="dateFrom" Type="date" Mode="In" />
+          <Parameter Name="dateTo" Type="date" Mode="In" />
+          <Parameter Name="BlockID" Type="int" Mode="In" />
+        </Function>
         <Function Name="Sp_MyComplaintList" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="RegionID" Type="int" Mode="In" />
           <Parameter Name="dateFrom" Type="date" Mode="In" />
@@ -4238,6 +4263,7 @@ warning 6002: The table/view 'IzmirBilling.dbo.vActiveJobs' does not have a prim
           <EntitySet Name="Tbl_ComplaintHistory" EntityType="Self.Tbl_ComplaintHistory" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TBL_Consumers" EntityType="Self.TBL_Consumers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Tbl_FollowupReasons" EntityType="Self.Tbl_FollowupReasons" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Tbl_IZBillingPeriod" EntityType="Self.Tbl_IZBillingPeriod" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Tbl_IZBlocks" EntityType="Self.Tbl_IZBlocks" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Tbl_IZConsumers" EntityType="Self.Tbl_IZConsumers" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TBL_KsbVisits" EntityType="Self.TBL_KsbVisits" Schema="dbo" store:Type="Tables" />
@@ -6509,6 +6535,13 @@ warning 6002: The table/view 'IzmirBilling.dbo.vActiveJobs' does not have a prim
           <EntitySet Name="Tbl_BanksData" EntityType="FOS_WallCoatModel.Tbl_BanksData" />
           <EntitySet Name="Tbl_IZConsumers" EntityType="FOS_WallCoatModel.Tbl_IZConsumers" />
           <EntitySet Name="Tbl_IZBlocks" EntityType="FOS_WallCoatModel.Tbl_IZBlocks" />
+          <EntitySet Name="Tbl_IZBillingPeriod" EntityType="FOS_WallCoatModel.Tbl_IZBillingPeriod" />
+          <FunctionImport Name="Sp_MyBillingList" ReturnType="Collection(FOS_WallCoatModel.Sp_MyBillingList_Result)">
+            <Parameter Name="RegionID" Mode="In" Type="Int32" />
+            <Parameter Name="dateFrom" Mode="In" Type="DateTime" />
+            <Parameter Name="dateTo" Mode="In" Type="DateTime" />
+            <Parameter Name="BlockID" Mode="In" Type="Int32" />
+          </FunctionImport>
         </EntityContainer>
         <ComplexType Name="AreasRelatedtoCities_Result">
           <Property Type="Int32" Name="SaleOfficerID" Nullable="true" />
@@ -10622,6 +10655,15 @@ warning 6002: The table/view 'IzmirBilling.dbo.vActiveJobs' does not have a prim
           <Property Name="MeterReading" Type="Decimal" Precision="18" Scale="4" />
           <Property Name="PeakReading" Type="Decimal" Precision="18" Scale="4" />
           <Property Name="OffPeakReading" Type="Decimal" Precision="18" Scale="4" />
+          <Property Name="PreviousReading" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="UnitsConsumed" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="BillingPeriodID" Type="Int32" />
+          <Property Name="PeakReadingPicture" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="OffPeakReadingPicture" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="ExportUnits" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="ExportUnistPicture" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="ReadingFeedback" Type="String" MaxLength="250" FixedLength="false" Unicode="false" />
+          <Property Name="Remarks" Type="String" MaxLength="550" FixedLength="false" Unicode="false" />
         </EntityType>
         <Association Name="FK_JobsDetail_Areas">
           <End Type="FOS_WallCoatModel.Area" Role="Area" Multiplicity="0..1" />
@@ -12319,6 +12361,7 @@ warning 6002: The table/view 'IzmirBilling.dbo.vActiveJobs' does not have a prim
           <Property Name="Longitude" Type="Decimal" Precision="18" Scale="10" />
           <Property Name="Location" Type="String" MaxLength="500" FixedLength="false" Unicode="false" />
           <Property Name="BlockID" Type="Int32" />
+          <Property Name="ConsumerID" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="Tbl_IZBlocks">
           <Key>
@@ -12328,6 +12371,30 @@ warning 6002: The table/view 'IzmirBilling.dbo.vActiveJobs' does not have a prim
           <Property Name="Name" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
           <Property Name="Status" Type="Boolean" />
         </EntityType>
+        <EntityType Name="Tbl_IZBillingPeriod">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Date" Type="DateTime" Precision="3" />
+          <Property Name="IsActive" Type="Boolean" />
+        </EntityType>
+        <ComplexType Name="Sp_MyBillingList_Result">
+          <Property Type="Int32" Name="ID" Nullable="false" />
+          <Property Type="Decimal" Name="MeterReading" Nullable="true" Precision="18" Scale="4" />
+          <Property Type="Decimal" Name="PeakReading" Nullable="true" Precision="18" Scale="4" />
+          <Property Type="Decimal" Name="OffPeakReading" Nullable="true" Precision="18" Scale="4" />
+          <Property Type="Decimal" Name="PreviousReading" Nullable="true" Precision="18" Scale="2" />
+          <Property Type="String" Name="BillingPeriod" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="MeterType" Nullable="true" MaxLength="90" />
+          <Property Type="String" Name="MeterNo" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="Address" Nullable="true" MaxLength="500" />
+          <Property Type="String" Name="OwnerName" Nullable="true" MaxLength="100" />
+          <Property Type="Decimal" Name="Units" Nullable="true" Precision="21" Scale="4" />
+          <Property Type="String" Name="Block" Nullable="true" MaxLength="20" />
+          <Property Type="DateTime" Name="DateOfBill" Nullable="true" Precision="23" />
+        </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -15891,6 +15958,15 @@ warning 6002: The table/view 'IzmirBilling.dbo.vActiveJobs' does not have a prim
           <EntitySetMapping Name="JobsDetails">
             <EntityTypeMapping TypeName="FOS_WallCoatModel.JobsDetail">
               <MappingFragment StoreEntitySet="JobsDetail">
+                <ScalarProperty Name="Remarks" ColumnName="Remarks" />
+                <ScalarProperty Name="ReadingFeedback" ColumnName="ReadingFeedback" />
+                <ScalarProperty Name="ExportUnistPicture" ColumnName="ExportUnistPicture" />
+                <ScalarProperty Name="ExportUnits" ColumnName="ExportUnits" />
+                <ScalarProperty Name="OffPeakReadingPicture" ColumnName="OffPeakReadingPicture" />
+                <ScalarProperty Name="PeakReadingPicture" ColumnName="PeakReadingPicture" />
+                <ScalarProperty Name="BillingPeriodID" ColumnName="BillingPeriodID" />
+                <ScalarProperty Name="UnitsConsumed" ColumnName="UnitsConsumed" />
+                <ScalarProperty Name="PreviousReading" ColumnName="PreviousReading" />
                 <ScalarProperty Name="OffPeakReading" ColumnName="OffPeakReading" />
                 <ScalarProperty Name="PeakReading" ColumnName="PeakReading" />
                 <ScalarProperty Name="MeterReading" ColumnName="MeterReading" />
@@ -17149,6 +17225,7 @@ warning 6002: The table/view 'IzmirBilling.dbo.vActiveJobs' does not have a prim
           <EntitySetMapping Name="Tbl_IZConsumers">
             <EntityTypeMapping TypeName="FOS_WallCoatModel.Tbl_IZConsumers">
               <MappingFragment StoreEntitySet="Tbl_IZConsumers">
+                <ScalarProperty Name="ConsumerID" ColumnName="ConsumerID" />
                 <ScalarProperty Name="BlockID" ColumnName="BlockID" />
                 <ScalarProperty Name="Location" ColumnName="Location" />
                 <ScalarProperty Name="Longitude" ColumnName="Longitude" />
@@ -17185,6 +17262,35 @@ warning 6002: The table/view 'IzmirBilling.dbo.vActiveJobs' does not have a prim
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="Tbl_IZBillingPeriod">
+            <EntityTypeMapping TypeName="FOS_WallCoatModel.Tbl_IZBillingPeriod">
+              <MappingFragment StoreEntitySet="Tbl_IZBillingPeriod">
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="Sp_MyBillingList" FunctionName="FOS_WallCoatModel.Store.Sp_MyBillingList">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="FOS_WallCoatModel.Sp_MyBillingList_Result">
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="MeterReading" ColumnName="MeterReading" />
+                <ScalarProperty Name="PeakReading" ColumnName="PeakReading" />
+                <ScalarProperty Name="OffPeakReading" ColumnName="OffPeakReading" />
+                <ScalarProperty Name="PreviousReading" ColumnName="PreviousReading" />
+                <ScalarProperty Name="BillingPeriod" ColumnName="BillingPeriod" />
+                <ScalarProperty Name="MeterType" ColumnName="MeterType" />
+                <ScalarProperty Name="MeterNo" ColumnName="MeterNo" />
+                <ScalarProperty Name="Address" ColumnName="Address" />
+                <ScalarProperty Name="OwnerName" ColumnName="OwnerName" />
+                <ScalarProperty Name="Units" ColumnName="Units" />
+                <ScalarProperty Name="Block" ColumnName="Block" />
+                <ScalarProperty Name="DateOfBill" ColumnName="DateOfBill" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

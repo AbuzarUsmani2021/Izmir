@@ -38,5 +38,6 @@ namespace FOS.DataLayer
         public Nullable<decimal> Longitude { get; set; }
         public string Location { get; set; }
         public Nullable<int> BlockID { get; set; }
+        public string ConsumerID { get; set; }
     }
 }

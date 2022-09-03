@@ -58,6 +58,7 @@ namespace FOS.Web.UI.Controllers.API
                             FaultTypes= new CommonController().GetFaultTypes(),
                             EquipmentCategory = new CommonController().GetEquipmentCategory(),
                             MeterReadingLovs = new CommonController().GetLovs(),
+                            IzmirBlocks = new CommonController().GetBlocks(),
                             EquipmentBrand = new CommonController().GetEquipmentBrands(),
                             Priorities = new CommonController().GetPriorities(),
                             Status= new CommonController().GetComplaintStatus(),
@@ -178,6 +179,8 @@ namespace FOS.Web.UI.Controllers.API
         public List<FaultType> FaultTypes { get; set; }
         public List<FaultType> EquipmentCategory { get; set; }
         public List<FaultType> MeterReadingLovs { get; set; }
+
+        public List<FaultType> IzmirBlocks { get; set; }
         public List<FaultType> EquipmentBrand { get; set; }
         public List<Priority> Priorities { get; set; }
         public List<WorkDone> WorkDoneStatus { get; set; }

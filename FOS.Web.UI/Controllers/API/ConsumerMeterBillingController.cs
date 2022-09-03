@@ -24,6 +24,11 @@ namespace FOS.Web.UI.Controllers.API
             try
             {
                 Tbl_IZConsumers ret = db.Tbl_IZConsumers.Where(r => r.ID == rm.RetailerId).FirstOrDefault();
+
+                var data = db.JobsDetails.Where(x => x.ConsumerID == rm.RetailerId).OrderByDescending(x => x.ID).FirstOrDefault();
+
+                var billingmonth = db.Tbl_IZBillingPeriod.Where(x => x.IsActive == true).FirstOrDefault();
+
                 if (ret != null)
                 {
                     DateTime serverTime = DateTime.Now; // gives you current Time in server timeZone
@@ -51,14 +56,32 @@ namespace FOS.Web.UI.Controllers.API
                     jobDet.JobID = JobObj.ID;
                     jobDet.RegionalHeadID = JobObj.RegionalHeadID;
                     jobDet.SalesOficerID = JobObj.SaleOfficerID;
-                    jobDet.RetailerID = rm.RetailerId;
+                    jobDet.RetailerID = 1;
+                    jobDet.ConsumerID = rm.RetailerId;
                     jobDet.ActivityDetails = "Online";
                     jobDet.JobDate = localTime;
                     jobDet.JobType = "Meter Reading";
                     jobDet.Status = true;
                     jobDet.MeterReading = rm.MeterReading;
                     jobDet.OffPeakReading = rm.OffPeakReading;
+                    jobDet.BillingPeriodID = billingmonth.ID;
+                    jobDet.ExportUnits = rm.ExportsUnits;
                     jobDet.PeakReading = rm.Peakreading;
+                    jobDet.ReadingFeedback = rm.ReadingFeedback;
+                    jobDet.Remarks = rm.Remarks;
+                    if (data == null)
+                    {
+                        jobDet.PreviousReading = 0;
+
+                        jobDet.UnitsConsumed = rm.MeterReading - jobDet.PreviousReading;
+
+                    }
+                    else
+                    {
+                        jobDet.PreviousReading = data.MeterReading;
+                        jobDet.UnitsConsumed = rm.MeterReading - data.MeterReading;
+                    }
+                  
                     // jobDet.ActivityType = rm.ActivityType;
                     jobDet.VisitPurpose = "Ordering";
                     if (rm.Picture1 == "" || rm.Picture1 == null)
@@ -69,6 +92,37 @@ namespace FOS.Web.UI.Controllers.API
                     {
                         jobDet.Picture1 = ConvertIntoByte(rm.Picture1, "OrderPicture", DateTime.Now.ToString("dd-mm-yyyy hhmmss").Replace(" ", ""), "OrderingPictures");
                     }
+
+                    if (rm.Picture2 == "" || rm.Picture2 == null)
+                    {
+                        jobDet.PeakReadingPicture = null;
+                    }
+                    else
+                    {
+                        jobDet.PeakReadingPicture = ConvertIntoByte(rm.Picture2, "OrderPicture", DateTime.Now.ToString("dd-mm-yyyy hhmmss").Replace(" ", ""), "OrderingPictures");
+                    }
+
+                    if (rm.Picture3 == "" || rm.Picture3 == null)
+                    {
+                        jobDet.OffPeakReadingPicture = null;
+                    }
+                    else
+                    {
+                        jobDet.OffPeakReadingPicture = ConvertIntoByte(rm.Picture3, "OrderPicture", DateTime.Now.ToString("dd-mm-yyyy hhmmss").Replace(" ", ""), "OrderingPictures");
+                    }
+
+
+                    if (rm.Picture4 == "" || rm.Picture4 == null)
+                    {
+                        jobDet.ExportUnistPicture = null;
+                    }
+                    else
+                    {
+                        jobDet.ExportUnistPicture = ConvertIntoByte(rm.Picture4, "OrderPicture", DateTime.Now.ToString("dd-mm-yyyy hhmmss").Replace(" ", ""), "OrderingPictures");
+                    }
+
+
+
 
 
 
@@ -84,7 +138,7 @@ namespace FOS.Web.UI.Controllers.API
                     return new Result<SuccessResponse>
                     {
                         Data = null,
-                        Message = "Order Done Successfully",
+                        Message = "Reading Done Successfully",
                         ResultType = ResultType.Success,
                         Exception = null,
                         ValidationErrors = null
@@ -141,14 +195,21 @@ namespace FOS.Web.UI.Controllers.API
             public decimal OffPeakReading { get; set; }
 
             public decimal Peakreading { get; set; }
+            public decimal ExportsUnits { get; set; }
             public string PurposeofVisit { get; set; }
             public string ActivityDetails { get; set; }
             public string Picture1 { get; set; }
+            public string Picture2 { get; set; }
+            public string Picture3 { get; set; }
+            public string Picture4 { get; set; }
+            public string Remarks { get; set; }
             public string ReminderCancelStatus { get; set; }
 
             [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{dd/MM/yyyy}")]
             public string NextVisitDate { get; set; }
             public string Priorty { get; set; }
+
+            public string ReadingFeedback { get; set; }
             public string TentativeCloseDate { get; set; }
             public List<JobItemModel> StockItems { get; set; }
 

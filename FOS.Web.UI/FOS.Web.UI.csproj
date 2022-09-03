@@ -251,6 +251,8 @@
     <Compile Include="Controllers\API\GetConsumerListByIDController.cs" />
     <Compile Include="Controllers\API\GetConsumerRelatedtoCodeForBanksController.cs" />
     <Compile Include="Controllers\API\GetConsumerListController.cs" />
+    <Compile Include="Controllers\API\PreviousReadingConsumerWiseController.cs" />
+    <Compile Include="Controllers\API\MyBillingListController.cs" />
     <Compile Include="Controllers\API\NewConsumerController.cs" />
     <Compile Include="Controllers\API\MeterReadingMapViewController.cs" />
     <Compile Include="Controllers\API\GetCurrentRouteOfSOController.cs" />

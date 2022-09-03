@@ -65,7 +65,7 @@ namespace FOS.Web.UI.Controllers
 
                     if (TeamID == 4)
                     {
-                        pageUrl = string.Format("{0}/Home/WasaDashboard", Settings.AppPath);
+                        pageUrl = string.Format("{0}/Home/Home", Settings.AppPath);
                     }
                     else if (TeamID == 5 || TeamID == 6)
                     {

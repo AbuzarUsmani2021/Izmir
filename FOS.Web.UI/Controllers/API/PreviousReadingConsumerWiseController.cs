@@ -12,7 +12,7 @@ using System.Web.Http;
 
 namespace FOS.Web.UI.Controllers.API
 {
-    public class MyOrderListSummerySOWiseController : ApiController
+    public class PreviousReadingConsumerWiseController : ApiController
     {
         FOSDataModel db = new FOSDataModel();
 
@@ -21,34 +21,29 @@ namespace FOS.Web.UI.Controllers.API
             FOSDataModel dbContext = new FOSDataModel();
             try
             {
-                DateTime dtFromTodayUtc = DateTime.UtcNow.AddHours(5);
-
-                DateTime dtFromToday = dtFromTodayUtc.Date;
-                DateTime dtToToday = dtFromToday.AddDays(1);
-
                 if (ConsumerID > 0)
                 {
                     object[] param = { ConsumerID };
-                    
-                    
-                        var result = db.JobsDetails.Where(x => x.ConsumerID == ConsumerID).OrderByDescending(x => x.ID).Select(x=>new
-                        {
-                            ID=x.ID,
-                            PreviousReading=x.PreviousReading,
-                            PreviosUnits= (x.MeterReading-x.PreviousReading)
+                    var billingmonth = db.Tbl_IZBillingPeriod.Where(x => x.IsActive == true).FirstOrDefault();
 
-                        }
-                        ).FirstOrDefault();
+                    var result = db.JobsDetails.Where(x => x.ConsumerID == ConsumerID && x.BillingPeriodID==billingmonth.ID).OrderByDescending(x => x.ID).Select(x => new
+                    {
+                        ID = x.ID,
+                        PreviousReading = x.PreviousReading,
+                        PreviosUnits = (x.MeterReading - x.PreviousReading)
 
-                    if (result != null )
+                    }
+                    ).FirstOrDefault();
+
+                    if (result != null)
                     {
                         return Ok(new
                         {
                             PreviousReading = result
-                            
+
                         });
                     }
-                 
+
                 }
             }
             catch (Exception ex)

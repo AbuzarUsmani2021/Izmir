@@ -642,7 +642,26 @@ namespace FOS.Web.UI.Controllers.API
                 Name = x.Name
             }).ToList();
 
-           
+
+
+
+            return dbregions;
+        }
+
+
+        public List<FaultType> GetBlocks()
+        {
+            List<FaultType> cities = new List<FaultType>();
+
+
+
+            var dbregions = db.Tbl_IZBlocks.Select(x => new FaultType
+            {
+                ID = x.ID,
+                Name = x.Name
+            }).ToList();
+
+
 
 
             return dbregions;
