@@ -23,11 +23,21 @@ namespace FOS.Web.UI.Controllers.API
             var RemObj = new TblReminder();
             try
             {
+                var billingmonth = db.Tbl_IZBillingPeriod.Where(x => x.IsActive == true).FirstOrDefault();
+                var Previousdata=db.JobsDetails.Where(x => x.ConsumerID == rm.RetailerId && x.BillingPeriodID==billingmonth.ID).FirstOrDefault();
                 Tbl_IZConsumers ret = db.Tbl_IZConsumers.Where(r => r.ID == rm.RetailerId).FirstOrDefault();
+                if (Previousdata != null)
+                {
+                    db.JobsDetails.Remove(Previousdata);
+                    db.SaveChanges();
+
+                }
+
+                
 
                 var data = db.JobsDetails.Where(x => x.ConsumerID == rm.RetailerId).OrderByDescending(x => x.ID).FirstOrDefault();
 
-                var billingmonth = db.Tbl_IZBillingPeriod.Where(x => x.IsActive == true).FirstOrDefault();
+    
 
                 if (ret != null)
                 {

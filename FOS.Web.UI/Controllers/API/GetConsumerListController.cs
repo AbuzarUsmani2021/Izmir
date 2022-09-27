@@ -16,7 +16,7 @@ namespace FOS.Web.UI.Controllers.API
 
         FOSDataModel db = new FOSDataModel();
 
-        public IHttpActionResult Get()
+        public IHttpActionResult Get(int BlockID)
         {
             FOSDataModel dbContext = new FOSDataModel();
             try
@@ -27,7 +27,7 @@ namespace FOS.Web.UI.Controllers.API
 
                 // RetailerData cty;
 
-                var result = dbContext.Tbl_IZConsumers.Select(x => new
+                var result = dbContext.Tbl_IZConsumers.Where(x=>x.BlockID==BlockID).Select(x => new
                 {
                     ID = x.ID,
                     Name = x.Address+ "/"+ "" + x.MeterNo,
