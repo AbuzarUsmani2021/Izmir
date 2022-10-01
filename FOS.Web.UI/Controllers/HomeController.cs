@@ -13,6 +13,7 @@ using System.Web.Http;
 using System.Web.Mvc;
 using FOS.Web.UI.Common;
 using FOS.Web.UI.Controllers.API;
+using FOS.Web.UI.Models;
 
 namespace FOS.Web.UI.Controllers
 {
@@ -37,127 +38,48 @@ namespace FOS.Web.UI.Controllers
         [CustomAuthorize]
         public ActionResult Home()
         {
-            var objRetailer = new KSBComplaintData();
-            List<GetDataRelatedToFaultType_Result> faulttypes=null;
-            List<GetTotalByDate_Result> PresentSO = null;
 
-                List<RegionData> regionalHeadData = new List<RegionData>();
-                regionalHeadData = FOS.Setup.ManageRegionalHead.GetRegionalList();
-                int regId = 0;
-                if (FOS.Web.UI.Controllers.AdminPanelController.GetRegionalHeadIDRelatedToUser() == 0)
+            var blockSData = new IZHomeData();
+            using (FOSDataModel db = new FOSDataModel())
+            {
+                blockSData.Blocks = db.Tbl_IZBlocks.Where(x => x.Status == true).ToList();
+                ViewBag.MonthName = db.Tbl_IZBillingPeriod.Where(x => x.IsActive == true).FirstOrDefault().Name;
+
+            }
+            return View(blockSData);
+        }
+
+        public JsonResult GetBloackWiseReading(DTParameters param, int blockID)
+        {
+            try
+            {
+                FOSDataModel db = new FOSDataModel();
+                int monthID = db.Tbl_IZBillingPeriod.Where(x => x.IsActive == true).FirstOrDefault().ID;
+
+                //ViewBag.BlockName = db.Tbl_IZBlocks.Where(x => x.ID == blockID).FirstOrDefault().Name;
+
+                var dtsource = new List<IZHomeData>();
+                dtsource = ManageCity.GetCurrentMonthForGrid(blockID, monthID);
+                List<String> columnSearch = new List<string>();
+                foreach (var col in param.Columns)
                 {
-                    regId = regionalHeadData.Select(r => r.ID).FirstOrDefault();
+                    columnSearch.Add(col.Search.Value);
                 }
-                else
+                List<IZHomeData> data = ManageCity.GetResultReadingCurrentMonth(param.Search.Value, param.SortOrder, param.Start, param.Length, dtsource, columnSearch);
+                int count = ManageCity.CountCurrentMonthReading(param.Search.Value, dtsource, columnSearch);
+                DTResult<IZHomeData> result = new DTResult<IZHomeData>
                 {
-                    regId = FOS.Web.UI.Controllers.AdminPanelController.GetRegionalHeadIDRelatedToUser();
-                }
-
-
-
-            int TeamID = (int)Session["TeamID"];
-            //    List<SaleOfficerData> SaleOfficerObj = ManageSaleOffice.GetProjects(TeamID);
-            //    var objSaleOff = SaleOfficerObj.FirstOrDefault();
-
-            List<DealerData> DealerObj = ManageDealer.GetAllDealersListRelatedToRegionalHead(regId);
-
-              
-                //objRetailer.Client = regionalHeadData;
-                ////Get Projects start
-                //var soid = Convert.ToInt32(Session["SORelationID"]);
-                var ListOfProjects = db.Cities.Select(x => x.ID).Distinct().ToList();
-                objRetailer.Projects = FOS.Setup.ManageSaleOffice.GetProjectsListForDashboard(ListOfProjects);
-              //  ////////Get Projects END
-                //objRetailer.Cities = FOS.Setup.ManageCity.GetCityList();
-                //objRetailer.priorityDatas = FOS.Setup.ManageCity.GetPrioritiesList();
-                //objRetailer.faultTypes = FOS.Setup.ManageCity.GetFaultTypesList();
-                //objRetailer.faultTypesDetail = FOS.Setup.ManageCity.GetFaultTypesDetailList();
-                //objRetailer.complaintStatuses = FOS.Setup.ManageCity.GetComplaintStatusList();
-                //objRetailer.FieldOfficers = FOS.Setup.ManageCity.GetFieldOfficersList(TeamID);
-                //objRetailer.ProgressStatus = FOS.Setup.ManageCity.GetProgressStatusList();
-                //objRetailer.LaunchedBy = FOS.Setup.ManageCity.GetLaunchedByList();
-                //objRetailer.Areas = FOS.Setup.ManageArea.GetAreaList();
-                //objRetailer.SubDivisions = ManageRetailer.GetSubDivisionsList();
-                //objRetailer.Sites = FOS.Setup.ManageArea.GetSitesList();
-                // objRetailer.ComplaintTypes = FOS.Setup.ManageCity.GetComplaintTypeList();
-
-
-            // ViewBag.rptid = "";
-                //ViewBag.retailers = ManageRetailer.GetRetailerForGrid().Count();
-                //ViewBag.Towns = db.Areas.Where(x => x.IsActive == true).Count();
-                //ViewBag.SubDivisions = db.SubDivisions.Count();
-
-                //var jobs = ManageJobs.GetJobsToExportInExcel();
-
-                //DateTime now = DateTime.Now;
-                //var startDate = new DateTime(now.Year, now.Month, 1);
-                //var endDate = startDate.AddMonths(1).AddDays(-1);
-                //var today = DateTime.Today;
-                //var month = new DateTime(today.Year, today.Month, 1);
-                //var first = month.AddMonths(-1);
-                //var last = month.AddDays(-1);
-
-                //// Last Month Sales
-                //var CurrentMonthRetailerSale = (from lm in db.Jobs
-                //                                where lm.CreatedDate >= first
-                //                                && lm.CreatedDate <= last
-
-                //                                select lm).ToList();
-
-                //// New Customers Today
-
-                //var CurrentMonthDistributorrSale = (from lm in db.Jobs
-                //                                    where lm.CreatedDate >= startDate && lm.CreatedDate <= endDate
-                //                                    select lm).ToList();
-
-                ////// Current Month Order Delievered
-                //var PreviousMonthRetailerDelievered = (from lm in db.JobsDetails
-                //                                       where lm.JobDate >= first
-                //                                       && lm.JobDate <= last
-                //                                       && lm.JobType == "Retailer Order"
-                //                                       select lm).ToList();
-
-
-
-                //ViewBag.Lastmonthsale = CurrentMonthRetailerSale.Count();
-                //ViewBag.ThisMonthSale = CurrentMonthDistributorrSale.Count();
-                //ViewBag.ThisMonthSaleDone = PreviousMonthRetailerDelievered.Count();
-                ////ViewBag.PreviousMonthSaleDone = PreviousMonthDistributorDelievered.Count();
-                ////ViewBag.TodaySaleDone = ThisMonthSampleDelievered.Count();
-                //ViewBag.SOPresentToday = Dashboard.SOPresenttoday().Count();
-                //ViewBag.SOAbsentToday = Dashboard.SOAbsenttoday().Count();
-                //ViewBag.FSPlanndeToday = Dashboard.FSPlannedtoday().Count();
-                //ViewBag.FSVisitedToday = Dashboard.FSVisitedtoday().Count();
-                //ViewBag.RSPlannedToday = Dashboard.RSPlannedToday().Count();
-                //ViewBag.OpenComplaints = Dashboard.OpenComplaints().Count();
-                //ViewBag.RSFollowUpToday = Dashboard.RSFollowUpToday().Count();
-                ManageRetailer objRetailers = new ManageRetailer();
-                DateTime serverTime = DateTime.Now; // gives you current Time in server timeZone
-                DateTime utcTime = serverTime.ToUniversalTime(); // convert it to Utc using timezone setting of server computer
-
-                TimeZoneInfo tzi = TimeZoneInfo.FindSystemTimeZoneById("Pakistan Standard Time");
-                DateTime localTime = TimeZoneInfo.ConvertTimeFromUtc(utcTime, tzi);
-                DateTime dtFromTodayUtc = DateTime.UtcNow.AddHours(5);
-
-                DateTime dtFromToday = dtFromTodayUtc.Date;
-                DateTime dtToToday = dtFromToday.AddDays(1);
-              
-               
-                List<GetTComplaintsStatusWise_Result> SOVisits = objRetailers.SOVisitsToday(dtFromToday, dtToToday,0);
-
-                // faulttypes = objRetailers.FaultTypeGraph(dtFromToday, dtToToday,0);
-                //PresentSO = objRetailers.TotalPresentSO();
-          
-         
-
-               // ViewBag.DataPoints = JsonConvert.SerializeObject(result1);
-                //ViewBag.DataPoints1 = JsonConvert.SerializeObject(faulttypes);
-                //ViewBag.DataPoints2 = JsonConvert.SerializeObject(PresentSO);
-                //ViewBag.DataPoints3 = JsonConvert.SerializeObject(SOVisits);
-             
-             
-          
-            return View(objRetailer);
+                    draw = param.Draw,
+                    data = data,
+                    recordsFiltered = count,
+                    recordsTotal = count
+                };
+                return Json(result);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { error = ex.Message });
+            }
         }
 
         [CustomAuthorize]
@@ -180,11 +102,11 @@ namespace FOS.Web.UI.Controllers
             return Json(result);
         }
 
-       
+
         public JsonResult SaveClientRemarks(ClientRemark model)
         {
             var result = false;
-            if (model.ClientRemarks!=null)
+            if (model.ClientRemarks != null)
             {
                 ClientRemark CR = new ClientRemark();
                 CR.ComplaintID = model.ComplaintID;
@@ -196,9 +118,9 @@ namespace FOS.Web.UI.Controllers
                 CR.RemarksByName = db.SaleOfficers.Where(x => x.ID == CR.RemarksBy).Select(x => x.Name).FirstOrDefault();
                 db.ClientRemarks.Add(CR);
                 db.SaveChanges();
-                 result = true;
+                result = true;
             }
-           
+
             return Json(result, JsonRequestBehavior.AllowGet);
         }
         public JsonResult UpdateCompaintDateTime(DateTime UpdateDateTime, int UpdateDateTimeComplaintID)
@@ -468,14 +390,14 @@ namespace FOS.Web.UI.Controllers
 
             return View(objRetailer);
         }
-                                
+
 
         public JsonResult PostUpdateComplaint(KSBComplaintData model)
         {
             var JobObj = new Job();
             var JobDet = new JobsDetail();
             var result = false;
-            if(model.RoleID==2)
+            if (model.RoleID == 2)
             {
                 JobObj = db.Jobs.Where(u => u.ID == model.UpdateComplaintID).FirstOrDefault();
                 JobObj.PersonName = model.UpdatePerson;
@@ -554,8 +476,8 @@ namespace FOS.Web.UI.Controllers
                 else
                 {
                     jobDetail.Picture2 = model.UpdatePicture2;
-                }               
-                 db.JobsDetails.Add(jobDetail);
+                }
+                db.JobsDetails.Add(jobDetail);
 
                 Tbl_ComplaintHistory history = new Tbl_ComplaintHistory();
                 history.ID = db.Tbl_ComplaintHistory.OrderByDescending(u => u.ID).Select(u => u.ID).FirstOrDefault() + 1;
@@ -1078,30 +1000,30 @@ namespace FOS.Web.UI.Controllers
             }
             else
             {
-                    JobObj = db.Jobs.Where(u => u.ID == model.UpdateComplaintID).FirstOrDefault();
-                    JobDet = db.JobsDetails.Where(u => u.JobID == JobObj.ID && u.IsPublished == 1).OrderByDescending(u => u.ID).FirstOrDefault();
+                JobObj = db.Jobs.Where(u => u.ID == model.UpdateComplaintID).FirstOrDefault();
+                JobDet = db.JobsDetails.Where(u => u.JobID == JobObj.ID && u.IsPublished == 1).OrderByDescending(u => u.ID).FirstOrDefault();
 
-                    JobsDetail jobDetail = new JobsDetail();
-                    jobDetail.ID = db.JobsDetails.OrderByDescending(u => u.ID).Select(u => u.ID).FirstOrDefault() + 1;
-                    jobDetail.JobID = JobObj.ID;
-                    jobDetail.PRemarks = model.UpdateProgressRemarks;
-                    jobDetail.AssignedToSaleOfficer = model.UpdateSalesOficerID;
-                    jobDetail.RetailerID = JobObj.SiteID;
-                    jobDetail.IsPublished = 0;
+                JobsDetail jobDetail = new JobsDetail();
+                jobDetail.ID = db.JobsDetails.OrderByDescending(u => u.ID).Select(u => u.ID).FirstOrDefault() + 1;
+                jobDetail.JobID = JobObj.ID;
+                jobDetail.PRemarks = model.UpdateProgressRemarks;
+                jobDetail.AssignedToSaleOfficer = model.UpdateSalesOficerID;
+                jobDetail.RetailerID = JobObj.SiteID;
+                jobDetail.IsPublished = 0;
                 if (model.UpdateStatusID == 3)
                 {
                     JobObj.ResolvedAt = DateTime.UtcNow.AddHours(5);
                 }
                 jobDetail.ActivityType = model.UpdateFaultTypeDetailOtherRemarks;
-                    jobDetail.ProgressStatusID = model.UpdateProgressStatusId;
-                    jobDetail.ProgressStatusRemarks = model.UpdateProgressStatusOtherRemarks;
-                    jobDetail.WorkDoneID = model.UpdateProgressStatusId;
-                    jobDetail.SalesOficerID = JobObj.SaleOfficerID;
-                    jobDetail.JobDate = DateTime.UtcNow.AddHours(5);
-                    jobDetail.ChildFaultTypeDetailID = model.UpdateFaulttypeDetailId;
-                    jobDetail.ChildFaultTypeID = model.UpdateFaulttypeId;
-                    jobDetail.ChildStatusID = model.UpdateStatusID;
-                    jobDetail.ChildAssignedSaleOfficerID = model.UpdateSalesOficerID;
+                jobDetail.ProgressStatusID = model.UpdateProgressStatusId;
+                jobDetail.ProgressStatusRemarks = model.UpdateProgressStatusOtherRemarks;
+                jobDetail.WorkDoneID = model.UpdateProgressStatusId;
+                jobDetail.SalesOficerID = JobObj.SaleOfficerID;
+                jobDetail.JobDate = DateTime.UtcNow.AddHours(5);
+                jobDetail.ChildFaultTypeDetailID = model.UpdateFaulttypeDetailId;
+                jobDetail.ChildFaultTypeID = model.UpdateFaulttypeId;
+                jobDetail.ChildStatusID = model.UpdateStatusID;
+                jobDetail.ChildAssignedSaleOfficerID = model.UpdateSalesOficerID;
                 if (Request.Files["UpdatePicture1"] != null)
                 {
                     var file = Request.Files["UpdatePicture1"];
@@ -1147,355 +1069,355 @@ namespace FOS.Web.UI.Controllers
 
                 db.JobsDetails.Add(jobDetail);
 
-                    if (JobDet.AssignedToSaleOfficer != model.UpdateSalesOficerID)
+                if (JobDet.AssignedToSaleOfficer != model.UpdateSalesOficerID)
+                {
+                    var data = db.JobsDetails.Where(u => u.JobID == JobObj.ID && u.IsPublished == 1).ToList();
+                    foreach (var item in data)
                     {
-                        var data = db.JobsDetails.Where(u => u.JobID == JobObj.ID && u.IsPublished == 1).ToList();
-                        foreach (var item in data)
-                        {
-                            item.AssignedToSaleOfficer = model.UpdateSalesOficerID;
-                            item.ChildAssignedSaleOfficerID = model.UpdateSalesOficerID;
-                            db.SaveChanges();
-                        }
-
-
-                        var data2 = db.Tbl_ComplaintHistory.Where(x => x.JobID == JobObj.ID).ToList();
-
-                        foreach (var item in data2)
-                        {
-                            item.AssignedToSaleOfficer = model.UpdateSalesOficerID;
-                            // item.FirstAssignedSO = item.AssignedToSaleOfficer;
-                            db.SaveChanges();
-                        }
+                        item.AssignedToSaleOfficer = model.UpdateSalesOficerID;
+                        item.ChildAssignedSaleOfficerID = model.UpdateSalesOficerID;
+                        db.SaveChanges();
                     }
 
 
-                    db.SaveChanges();
-                    Tbl_ComplaintHistory history = new Tbl_ComplaintHistory();
-                    history.JobID = JobObj.ID;
-                    history.JobDetailID = jobDetail.ID;
-                    history.FaultTypeDetailRemarks = model.UpdateFaultTypeDetailOtherRemarks;
-                    history.ProgressStatusRemarks = model.UpdateProgressStatusOtherRemarks;
-                    history.FaultTypeId = model.UpdateFaulttypeId;
-                    history.FaultTypeDetailID = model.UpdateFaulttypeDetailId;
-                    history.ComplaintStatusId = model.UpdateStatusID;
-                    history.ProgressStatusID = model.UpdateProgressStatusId;
-                    history.AssignedToSaleOfficer = model.UpdateSalesOficerID;
-                    history.LaunchedById = JobObj.SaleOfficerID;
-                    history.Picture1 = jobDetail.Picture1;
-                    history.Picture2 = jobDetail.Picture2;
-                    history.SiteID = jobDetail.RetailerID;
-                    history.TicketNo = JobObj.TicketNo;
-                    history.InitialRemarks = JobObj.InitialRemarks;
-                    history.PriorityId = model.UpdatePriorityId;
-                    history.IsActive = true;
-                    history.IsPublished = 0;
-                    history.UpdateRemarks = jobDetail.PRemarks;
-                    history.CreatedDate = DateTime.UtcNow.AddHours(5);
-                    db.Tbl_ComplaintHistory.Add(history);
+                    var data2 = db.Tbl_ComplaintHistory.Where(x => x.JobID == JobObj.ID).ToList();
 
-                    var secondLastdata = db.Tbl_ComplaintHistory.OrderByDescending(s => s.ID).FirstOrDefault();
-                    if (secondLastdata == null)
+                    foreach (var item in data2)
                     {
-                        var data = db.Tbl_ComplaintHistory.FirstOrDefault();
+                        item.AssignedToSaleOfficer = model.UpdateSalesOficerID;
+                        // item.FirstAssignedSO = item.AssignedToSaleOfficer;
+                        db.SaveChanges();
+                    }
+                }
 
-                        ComplaintNotification notify = new ComplaintNotification();
-                        notify.ID = db.ComplaintNotifications.OrderByDescending(u => u.ID).Select(u => u.ID).FirstOrDefault() + 1;
-                        notify.JobID = JobObj.ID;
-                        notify.JobDetailID = jobDetail.ID;
-                        notify.ComplaintHistoryID = history.ID;
 
-                        if (data.SiteID == history.SiteID)
-                        {
-                            notify.IsSiteIDChanged = false;
-                        }
-                        else
-                        {
-                            notify.IsSiteIDChanged = true;
-                        }
-                        if (data.FaultTypeId == history.FaultTypeId)
-                        {
-                            notify.IsFaulttypeIDChanged = false;
-                        }
-                        else
-                        {
-                            notify.IsFaulttypeIDChanged = true;
-                        }
+                db.SaveChanges();
+                Tbl_ComplaintHistory history = new Tbl_ComplaintHistory();
+                history.JobID = JobObj.ID;
+                history.JobDetailID = jobDetail.ID;
+                history.FaultTypeDetailRemarks = model.UpdateFaultTypeDetailOtherRemarks;
+                history.ProgressStatusRemarks = model.UpdateProgressStatusOtherRemarks;
+                history.FaultTypeId = model.UpdateFaulttypeId;
+                history.FaultTypeDetailID = model.UpdateFaulttypeDetailId;
+                history.ComplaintStatusId = model.UpdateStatusID;
+                history.ProgressStatusID = model.UpdateProgressStatusId;
+                history.AssignedToSaleOfficer = model.UpdateSalesOficerID;
+                history.LaunchedById = JobObj.SaleOfficerID;
+                history.Picture1 = jobDetail.Picture1;
+                history.Picture2 = jobDetail.Picture2;
+                history.SiteID = jobDetail.RetailerID;
+                history.TicketNo = JobObj.TicketNo;
+                history.InitialRemarks = JobObj.InitialRemarks;
+                history.PriorityId = model.UpdatePriorityId;
+                history.IsActive = true;
+                history.IsPublished = 0;
+                history.UpdateRemarks = jobDetail.PRemarks;
+                history.CreatedDate = DateTime.UtcNow.AddHours(5);
+                db.Tbl_ComplaintHistory.Add(history);
 
-                        notify.IsSiteCodeChanged = false;
-                        if (data.FaultTypeDetailID == history.FaultTypeDetailID)
-                        {
-                            notify.IsFaulttypeDetailIDChanged = false;
-                        }
-                        else
-                        {
-                            notify.IsFaulttypeDetailIDChanged = true;
-                        }
-                        if (data.PriorityId == history.PriorityId)
-                        {
-                            notify.IsPriorityIDChanged = false;
-                        }
-                        else
-                        {
-                            notify.IsPriorityIDChanged = true;
-                        }
-                        if (data.ComplaintStatusId == history.ComplaintStatusId)
-                        {
-                            notify.IsComplaintStatusIDChanged = false;
-                        }
-                        else
-                        {
-                            notify.IsComplaintStatusIDChanged = true;
-                        }
-                        if (data.PersonName == history.PersonName)
-                        {
-                            notify.IsPersonNameChanged = false;
-                        }
-                        else
-                        {
-                            notify.IsPersonNameChanged = true;
-                        }
+                var secondLastdata = db.Tbl_ComplaintHistory.OrderByDescending(s => s.ID).FirstOrDefault();
+                if (secondLastdata == null)
+                {
+                    var data = db.Tbl_ComplaintHistory.FirstOrDefault();
 
-                        if (secondLastdata.Picture1 == history.Picture1)
-                        {
-                            notify.IsPicture1Changed = false;
-                        }
-                        else
-                        {
-                            notify.IsPicture1Changed = true;
-                        }
+                    ComplaintNotification notify = new ComplaintNotification();
+                    notify.ID = db.ComplaintNotifications.OrderByDescending(u => u.ID).Select(u => u.ID).FirstOrDefault() + 1;
+                    notify.JobID = JobObj.ID;
+                    notify.JobDetailID = jobDetail.ID;
+                    notify.ComplaintHistoryID = history.ID;
 
-                        if (secondLastdata.Picture2 == history.Picture2)
-                        {
-                            notify.IsPicture2Changed = false;
-                        }
-                        else
-                        {
-                            notify.IsPicture2Changed = true;
-                        }
-
-                        if (secondLastdata.Picture3 == history.Picture3)
-                        {
-                            notify.IsPicture3Changed = false;
-                        }
-                        else
-                        {
-                            notify.IsPicture3Changed = true;
-                        }
-
-                        if (data.ProgressStatusID == history.ProgressStatusID)
-                        {
-                            notify.IsProgressStatusIDChanged = false;
-                        }
-                        else
-                        {
-                            notify.IsProgressStatusIDChanged = true;
-                        }
-
-                        if (data.ProgressStatusRemarks == history.ProgressStatusRemarks)
-                        {
-                            notify.IsProgressStatusRemarksChanged = false;
-                        }
-                        else
-                        {
-                            notify.IsProgressStatusRemarksChanged = true;
-                        }
-
-                        if (data.FaultTypeDetailRemarks == history.FaultTypeDetailRemarks)
-                        {
-                            notify.IsFaulttypeDetailRemarksChanged = false;
-                        }
-                        else
-                        {
-                            notify.IsFaulttypeDetailRemarksChanged = true;
-                        }
-                        if (data.AssignedToSaleOfficer == history.AssignedToSaleOfficer)
-                        {
-                            notify.IsAssignedSaleOfficerChanged = false;
-                        }
-                        else
-                        {
-                            notify.IsAssignedSaleOfficerChanged = true;
-                        }
-                        if (data.UpdateRemarks == history.UpdateRemarks)
-                        {
-                            notify.IsUpdateRemarksChanged = false;
-                        }
-                        else
-                        {
-                            notify.IsUpdateRemarksChanged = true;
-                        }
-
-                        notify.CreatedDate = DateTime.UtcNow.AddHours(5);
-                        db.ComplaintNotifications.Add(notify);
-                        var UID = int.Parse(JobObj.Areas);
-                        var IDs = db.SOZoneAndTowns.Where(x => x.CityID == JobObj.CityID && x.AreaID == UID).Select(x => x.SOID).Distinct().ToList();
-                        foreach (var item in IDs)
-                        {
-
-                            NotificationSeen seen = new NotificationSeen();
-
-                            seen.JobID = JobObj.ID;
-                            seen.JobDetailID = jobDetail.ID;
-                            seen.ComplainthistoryID = history.ID;
-                            seen.ComplaintNotificationID = notify.ID;
-                            seen.IsSeen = false;
-                            seen.SOID = item;
-
-                            db.NotificationSeens.Add(seen);
-                            db.SaveChanges();
-                        }
+                    if (data.SiteID == history.SiteID)
+                    {
+                        notify.IsSiteIDChanged = false;
                     }
                     else
                     {
-                        ComplaintNotification notify = new ComplaintNotification();
-                        notify.ID = db.ComplaintNotifications.OrderByDescending(u => u.ID).Select(u => u.ID).FirstOrDefault() + 1;
-                        notify.JobID = JobObj.ID;
-                        notify.JobDetailID = jobDetail.ID;
-                        notify.ComplaintHistoryID = history.ID;
-
-                        if (secondLastdata.SiteID == history.SiteID)
-                        {
-                            notify.IsSiteIDChanged = false;
-                        }
-                        else
-                        {
-                            notify.IsSiteIDChanged = true;
-                        }
-                        if (secondLastdata.FaultTypeId == history.FaultTypeId)
-                        {
-                            notify.IsFaulttypeIDChanged = false;
-                        }
-                        else
-                        {
-                            notify.IsFaulttypeIDChanged = true;
-                        }
-
-                        notify.IsSiteCodeChanged = false;
-                        if (secondLastdata.FaultTypeDetailID == history.FaultTypeDetailID)
-                        {
-                            notify.IsFaulttypeDetailIDChanged = false;
-                        }
-                        else
-                        {
-                            notify.IsFaulttypeDetailIDChanged = true;
-                        }
-                        if (secondLastdata.PriorityId == history.PriorityId)
-                        {
-                            notify.IsPriorityIDChanged = false;
-                        }
-                        else
-                        {
-                            notify.IsPriorityIDChanged = true;
-                        }
-                        if (secondLastdata.ComplaintStatusId == history.ComplaintStatusId)
-                        {
-                            notify.IsComplaintStatusIDChanged = false;
-                        }
-                        else
-                        {
-                            notify.IsComplaintStatusIDChanged = true;
-                        }
-                        if (secondLastdata.PersonName == history.PersonName)
-                        {
-                            notify.IsPersonNameChanged = false;
-                        }
-                        else
-                        {
-                            notify.IsPersonNameChanged = true;
-                        }
-                        if (secondLastdata.Picture1 == history.Picture1)
-                        {
-                            notify.IsPicture1Changed = false;
-                        }
-                        else
-                        {
-                            notify.IsPicture1Changed = true;
-                        }
-
-                        if (secondLastdata.Picture2 == history.Picture2)
-                        {
-                            notify.IsPicture2Changed = false;
-                        }
-                        else
-                        {
-                            notify.IsPicture2Changed = true;
-                        }
-
-                        if (secondLastdata.Picture3 == history.Picture3)
-                        {
-                            notify.IsPicture3Changed = false;
-                        }
-                        else
-                        {
-                            notify.IsPicture3Changed = true;
-                        }
-
-
-
-                        if (secondLastdata.ProgressStatusID == history.ProgressStatusID)
-                        {
-                            notify.IsProgressStatusIDChanged = false;
-                        }
-                        else
-                        {
-                            notify.IsProgressStatusIDChanged = true;
-                        }
-
-                        if (secondLastdata.ProgressStatusRemarks == history.ProgressStatusRemarks)
-                        {
-                            notify.IsProgressStatusRemarksChanged = false;
-                        }
-                        else
-                        {
-                            notify.IsProgressStatusRemarksChanged = true;
-                        }
-
-                        if (secondLastdata.FaultTypeDetailRemarks == history.FaultTypeDetailRemarks)
-                        {
-                            notify.IsFaulttypeDetailRemarksChanged = false;
-                        }
-                        else
-                        {
-                            notify.IsFaulttypeDetailRemarksChanged = true;
-                        }
-                        if (secondLastdata.AssignedToSaleOfficer == history.AssignedToSaleOfficer)
-                        {
-                            notify.IsAssignedSaleOfficerChanged = false;
-                        }
-                        else
-                        {
-                            notify.IsAssignedSaleOfficerChanged = true;
-                        }
-                        if (secondLastdata.UpdateRemarks == history.UpdateRemarks)
-                        {
-                            notify.IsUpdateRemarksChanged = false;
-                        }
-                        else
-                        {
-                            notify.IsUpdateRemarksChanged = true;
-                        }
-                        notify.IsSeen = false;
-                        notify.CreatedDate = DateTime.UtcNow.AddHours(5);
-                        db.ComplaintNotifications.Add(notify);
-                        var UID = int.Parse(JobObj.Areas);
-                        var IDs = db.SOZoneAndTowns.Where(x => x.CityID == JobObj.CityID && x.AreaID == UID).Select(x => x.SOID).Distinct().ToList();
-                        foreach (var item in IDs)
-                        {
-
-                            NotificationSeen seen = new NotificationSeen();
-
-                            seen.JobID = JobObj.ID;
-                            seen.JobDetailID = jobDetail.ID;
-                            seen.ComplainthistoryID = history.ID;
-                            seen.ComplaintNotificationID = notify.ID;
-                            seen.IsSeen = false;
-                            seen.SOID = item;
-
-                            db.NotificationSeens.Add(seen);
-                            db.SaveChanges();
-                        }
+                        notify.IsSiteIDChanged = true;
                     }
-              
+                    if (data.FaultTypeId == history.FaultTypeId)
+                    {
+                        notify.IsFaulttypeIDChanged = false;
+                    }
+                    else
+                    {
+                        notify.IsFaulttypeIDChanged = true;
+                    }
+
+                    notify.IsSiteCodeChanged = false;
+                    if (data.FaultTypeDetailID == history.FaultTypeDetailID)
+                    {
+                        notify.IsFaulttypeDetailIDChanged = false;
+                    }
+                    else
+                    {
+                        notify.IsFaulttypeDetailIDChanged = true;
+                    }
+                    if (data.PriorityId == history.PriorityId)
+                    {
+                        notify.IsPriorityIDChanged = false;
+                    }
+                    else
+                    {
+                        notify.IsPriorityIDChanged = true;
+                    }
+                    if (data.ComplaintStatusId == history.ComplaintStatusId)
+                    {
+                        notify.IsComplaintStatusIDChanged = false;
+                    }
+                    else
+                    {
+                        notify.IsComplaintStatusIDChanged = true;
+                    }
+                    if (data.PersonName == history.PersonName)
+                    {
+                        notify.IsPersonNameChanged = false;
+                    }
+                    else
+                    {
+                        notify.IsPersonNameChanged = true;
+                    }
+
+                    if (secondLastdata.Picture1 == history.Picture1)
+                    {
+                        notify.IsPicture1Changed = false;
+                    }
+                    else
+                    {
+                        notify.IsPicture1Changed = true;
+                    }
+
+                    if (secondLastdata.Picture2 == history.Picture2)
+                    {
+                        notify.IsPicture2Changed = false;
+                    }
+                    else
+                    {
+                        notify.IsPicture2Changed = true;
+                    }
+
+                    if (secondLastdata.Picture3 == history.Picture3)
+                    {
+                        notify.IsPicture3Changed = false;
+                    }
+                    else
+                    {
+                        notify.IsPicture3Changed = true;
+                    }
+
+                    if (data.ProgressStatusID == history.ProgressStatusID)
+                    {
+                        notify.IsProgressStatusIDChanged = false;
+                    }
+                    else
+                    {
+                        notify.IsProgressStatusIDChanged = true;
+                    }
+
+                    if (data.ProgressStatusRemarks == history.ProgressStatusRemarks)
+                    {
+                        notify.IsProgressStatusRemarksChanged = false;
+                    }
+                    else
+                    {
+                        notify.IsProgressStatusRemarksChanged = true;
+                    }
+
+                    if (data.FaultTypeDetailRemarks == history.FaultTypeDetailRemarks)
+                    {
+                        notify.IsFaulttypeDetailRemarksChanged = false;
+                    }
+                    else
+                    {
+                        notify.IsFaulttypeDetailRemarksChanged = true;
+                    }
+                    if (data.AssignedToSaleOfficer == history.AssignedToSaleOfficer)
+                    {
+                        notify.IsAssignedSaleOfficerChanged = false;
+                    }
+                    else
+                    {
+                        notify.IsAssignedSaleOfficerChanged = true;
+                    }
+                    if (data.UpdateRemarks == history.UpdateRemarks)
+                    {
+                        notify.IsUpdateRemarksChanged = false;
+                    }
+                    else
+                    {
+                        notify.IsUpdateRemarksChanged = true;
+                    }
+
+                    notify.CreatedDate = DateTime.UtcNow.AddHours(5);
+                    db.ComplaintNotifications.Add(notify);
+                    var UID = int.Parse(JobObj.Areas);
+                    var IDs = db.SOZoneAndTowns.Where(x => x.CityID == JobObj.CityID && x.AreaID == UID).Select(x => x.SOID).Distinct().ToList();
+                    foreach (var item in IDs)
+                    {
+
+                        NotificationSeen seen = new NotificationSeen();
+
+                        seen.JobID = JobObj.ID;
+                        seen.JobDetailID = jobDetail.ID;
+                        seen.ComplainthistoryID = history.ID;
+                        seen.ComplaintNotificationID = notify.ID;
+                        seen.IsSeen = false;
+                        seen.SOID = item;
+
+                        db.NotificationSeens.Add(seen);
+                        db.SaveChanges();
+                    }
+                }
+                else
+                {
+                    ComplaintNotification notify = new ComplaintNotification();
+                    notify.ID = db.ComplaintNotifications.OrderByDescending(u => u.ID).Select(u => u.ID).FirstOrDefault() + 1;
+                    notify.JobID = JobObj.ID;
+                    notify.JobDetailID = jobDetail.ID;
+                    notify.ComplaintHistoryID = history.ID;
+
+                    if (secondLastdata.SiteID == history.SiteID)
+                    {
+                        notify.IsSiteIDChanged = false;
+                    }
+                    else
+                    {
+                        notify.IsSiteIDChanged = true;
+                    }
+                    if (secondLastdata.FaultTypeId == history.FaultTypeId)
+                    {
+                        notify.IsFaulttypeIDChanged = false;
+                    }
+                    else
+                    {
+                        notify.IsFaulttypeIDChanged = true;
+                    }
+
+                    notify.IsSiteCodeChanged = false;
+                    if (secondLastdata.FaultTypeDetailID == history.FaultTypeDetailID)
+                    {
+                        notify.IsFaulttypeDetailIDChanged = false;
+                    }
+                    else
+                    {
+                        notify.IsFaulttypeDetailIDChanged = true;
+                    }
+                    if (secondLastdata.PriorityId == history.PriorityId)
+                    {
+                        notify.IsPriorityIDChanged = false;
+                    }
+                    else
+                    {
+                        notify.IsPriorityIDChanged = true;
+                    }
+                    if (secondLastdata.ComplaintStatusId == history.ComplaintStatusId)
+                    {
+                        notify.IsComplaintStatusIDChanged = false;
+                    }
+                    else
+                    {
+                        notify.IsComplaintStatusIDChanged = true;
+                    }
+                    if (secondLastdata.PersonName == history.PersonName)
+                    {
+                        notify.IsPersonNameChanged = false;
+                    }
+                    else
+                    {
+                        notify.IsPersonNameChanged = true;
+                    }
+                    if (secondLastdata.Picture1 == history.Picture1)
+                    {
+                        notify.IsPicture1Changed = false;
+                    }
+                    else
+                    {
+                        notify.IsPicture1Changed = true;
+                    }
+
+                    if (secondLastdata.Picture2 == history.Picture2)
+                    {
+                        notify.IsPicture2Changed = false;
+                    }
+                    else
+                    {
+                        notify.IsPicture2Changed = true;
+                    }
+
+                    if (secondLastdata.Picture3 == history.Picture3)
+                    {
+                        notify.IsPicture3Changed = false;
+                    }
+                    else
+                    {
+                        notify.IsPicture3Changed = true;
+                    }
+
+
+
+                    if (secondLastdata.ProgressStatusID == history.ProgressStatusID)
+                    {
+                        notify.IsProgressStatusIDChanged = false;
+                    }
+                    else
+                    {
+                        notify.IsProgressStatusIDChanged = true;
+                    }
+
+                    if (secondLastdata.ProgressStatusRemarks == history.ProgressStatusRemarks)
+                    {
+                        notify.IsProgressStatusRemarksChanged = false;
+                    }
+                    else
+                    {
+                        notify.IsProgressStatusRemarksChanged = true;
+                    }
+
+                    if (secondLastdata.FaultTypeDetailRemarks == history.FaultTypeDetailRemarks)
+                    {
+                        notify.IsFaulttypeDetailRemarksChanged = false;
+                    }
+                    else
+                    {
+                        notify.IsFaulttypeDetailRemarksChanged = true;
+                    }
+                    if (secondLastdata.AssignedToSaleOfficer == history.AssignedToSaleOfficer)
+                    {
+                        notify.IsAssignedSaleOfficerChanged = false;
+                    }
+                    else
+                    {
+                        notify.IsAssignedSaleOfficerChanged = true;
+                    }
+                    if (secondLastdata.UpdateRemarks == history.UpdateRemarks)
+                    {
+                        notify.IsUpdateRemarksChanged = false;
+                    }
+                    else
+                    {
+                        notify.IsUpdateRemarksChanged = true;
+                    }
+                    notify.IsSeen = false;
+                    notify.CreatedDate = DateTime.UtcNow.AddHours(5);
+                    db.ComplaintNotifications.Add(notify);
+                    var UID = int.Parse(JobObj.Areas);
+                    var IDs = db.SOZoneAndTowns.Where(x => x.CityID == JobObj.CityID && x.AreaID == UID).Select(x => x.SOID).Distinct().ToList();
+                    foreach (var item in IDs)
+                    {
+
+                        NotificationSeen seen = new NotificationSeen();
+
+                        seen.JobID = JobObj.ID;
+                        seen.JobDetailID = jobDetail.ID;
+                        seen.ComplainthistoryID = history.ID;
+                        seen.ComplaintNotificationID = notify.ID;
+                        seen.IsSeen = false;
+                        seen.SOID = item;
+
+                        db.NotificationSeens.Add(seen);
+                        db.SaveChanges();
+                    }
+                }
+
                 string type = "Progress";
                 string message = "There Is An Update in Complaint No" + JobObj.TicketNo + " Which Is Performed By Field Staff. Kindly Publish it.";
 
@@ -1617,7 +1539,7 @@ namespace FOS.Web.UI.Controllers
             job.PersonName = obj.EditName;
             job.ComplaintStatusId = obj.EditStatusID;
 
-            comHis = db.Tbl_ComplaintHistory.Where(x => x.ID ==obj.ProgressID).FirstOrDefault();
+            comHis = db.Tbl_ComplaintHistory.Where(x => x.ID == obj.ProgressID).FirstOrDefault();
             comHis.SiteID = job.SiteID;
             comHis.FaultTypeId = obj.EditFaulttypeId;
             comHis.PriorityId = obj.EditPriorityId;
@@ -1636,7 +1558,7 @@ namespace FOS.Web.UI.Controllers
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult FilteredDashboard(DateTime? sdate , DateTime? edate, int? TID)
+        public ActionResult FilteredDashboard(DateTime? sdate, DateTime? edate, int? TID)
         {
             var objRetailer = new KSBComplaintData();
             List<GetDataRelatedToFaultType_Result> faulttypes = null;
@@ -1734,13 +1656,13 @@ namespace FOS.Web.UI.Controllers
 
 
 
-           
 
-         
-                DateTime start = (DateTime)sdate;
-                DateTime end = (DateTime)edate;
-                int ProjectID = (int)TID;
-                faulttypes = objRetailers.FaultTypeGraph(start, end, ProjectID);
+
+
+            DateTime start = (DateTime)sdate;
+            DateTime end = (DateTime)edate;
+            int ProjectID = (int)TID;
+            faulttypes = objRetailers.FaultTypeGraph(start, end, ProjectID);
             PresentSO = objRetailers.TotalPresentSO();
             List<GetTComplaintsStatusWise_Result> SOVisits = objRetailers.SOVisitsToday(start, end, ProjectID);
             // ViewBag.DataPoints = JsonConvert.SerializeObject(result1);

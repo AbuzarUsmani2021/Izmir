@@ -461,7 +461,7 @@ namespace FOS.Setup
             {
                 using (FOSDataModel dbContext = new FOSDataModel())
                 {
-                    city = dbContext.Retailers.Where(x=>x.IsActive==true && x.IsDeleted==false)
+                    city = dbContext.Retailers.Where(x => x.IsActive == true && x.IsDeleted == false)
                             .Select
                             (
                                 u => new RetailerData
@@ -475,7 +475,7 @@ namespace FOS.Setup
                     ID = 0,
                     Name = "--Select Site--"
                 });
-            
+
 
 
             }
@@ -714,7 +714,7 @@ namespace FOS.Setup
             return so;
         }
 
-       
+
         public static List<SaleOfficerData> GetFieldOfficersList(int TeamID)
         {
             List<SaleOfficerData> city = new List<SaleOfficerData>();
@@ -723,7 +723,7 @@ namespace FOS.Setup
             {
                 using (FOSDataModel dbContext = new FOSDataModel())
                 {
-                    city = dbContext.SaleOfficers.Where(x => x.RoleID == 3 && x.RegionalHeadID== TeamID)
+                    city = dbContext.SaleOfficers.Where(x => x.RoleID == 3 && x.RegionalHeadID == TeamID)
                             .Select
                             (
                                 u => new SaleOfficerData
@@ -786,20 +786,20 @@ namespace FOS.Setup
             {
                 using (FOSDataModel dbContext = new FOSDataModel())
                 {
-                   
-                        city = dbContext.Cities.Where(c => c.IsDeleted == false && c.IsActive == true)
-                                .Select
-                                (
-                                    u => new CityData
-                                    {
-                                        ID = u.ID,
-                                        Name = u.Name,
-                                    //RegionID = u.RegionID,
-                                    //RegionName = u.Region.Name,
-                                    //ShortCode = u.ShortCode,
-                                    //LastUpdate = u.LastUpdate
-                                }).OrderBy(x => x.Name).ToList();
-                 
+
+                    city = dbContext.Cities.Where(c => c.IsDeleted == false && c.IsActive == true)
+                            .Select
+                            (
+                                u => new CityData
+                                {
+                                    ID = u.ID,
+                                    Name = u.Name,
+                                        //RegionID = u.RegionID,
+                                        //RegionName = u.Region.Name,
+                                        //ShortCode = u.ShortCode,
+                                        //LastUpdate = u.LastUpdate
+                                    }).OrderBy(x => x.Name).ToList();
+
                 }
             }
             catch (Exception)
@@ -807,7 +807,7 @@ namespace FOS.Setup
                 throw;
             }
 
-         
+
 
             return city;
         }
@@ -912,7 +912,7 @@ namespace FOS.Setup
             {
                 using (FOSDataModel dbContext = new FOSDataModel())
                 {
-                    city = dbContext.Areas.Where(c => c.IsDeleted == false && c.IsActive == true && c.CityID==ID)
+                    city = dbContext.Areas.Where(c => c.IsDeleted == false && c.IsActive == true && c.CityID == ID)
                             .Select
                             (
                                 u => new CityData
@@ -1004,21 +1004,21 @@ namespace FOS.Setup
             return city;
         }
 
-        
-     
 
 
 
-       
 
 
 
-   
 
 
 
-      
-     
+
+
+
+
+
+
 
 
 
@@ -1057,7 +1057,7 @@ namespace FOS.Setup
         }
 
 
-      
+
 
 
         public static List<ComplaintStatus> GetProjectsList()
@@ -1092,10 +1092,10 @@ namespace FOS.Setup
             return city;
         }
 
-       
 
-   
-     
+
+
+
         public static List<ComplaintStatus> GetProjectsListForUsers(List<int?> list)
         {
             List<ComplaintStatus> city = new List<ComplaintStatus>();
@@ -1112,7 +1112,7 @@ namespace FOS.Setup
                         comlist.Name = dbContext.Zones.Where(x => x.ID == item).Select(x => x.Name).FirstOrDefault();
                         city.Add(comlist);
                     }
-                  
+
                 }
                 city.Insert(0, new ComplaintStatus
                 {
@@ -1148,8 +1148,8 @@ namespace FOS.Setup
                     }
 
                 }
-                
-               
+
+
 
             }
             catch (Exception)
@@ -2143,7 +2143,7 @@ namespace FOS.Setup
                         Name = i.Name,
                         ClientId = i.ClientId,
                         SapNo = i.SapNo,
-                        CreatedOn=i.CreatedOn.ToString(),
+                        CreatedOn = i.CreatedOn.ToString(),
                         AONO = i.AONO,
                         ContractNo = i.ContractNo,
                         ContractTitle = i.ContractTitle,
@@ -2452,7 +2452,7 @@ namespace FOS.Setup
                             ZoneObj.AwardDate = obj.AwardDate;
                             ZoneObj.Duration = obj.Duration;
                             ZoneObj.DateFrom = obj.DateFrom;
-                            ZoneObj.DateTo =obj.DateTo;
+                            ZoneObj.DateTo = obj.DateTo;
                             ZoneObj.ClientId = obj.ClientId;
                             ZoneObj.CreatedOn = DateTime.Now;
                             ZoneObj.CreatedBy = 1;
@@ -2560,7 +2560,7 @@ namespace FOS.Setup
                                     ClientName = dbContext.Regions.Where(x => x.ID == u.ClientId).Select(x => x.Name).FirstOrDefault(),
                                     Name = u.Name,
                                     SapNo = u.SapNo,
-                                    CreatedOn= u.CreatedOn.ToString(),
+                                    CreatedOn = u.CreatedOn.ToString(),
                                     ClientId = u.ClientId,
                                     AONO = u.AONO,
                                     AwardDate = u.AwardDate,
@@ -2581,16 +2581,217 @@ namespace FOS.Setup
             return cityData;
         }
 
+        public static List<IZMonthCloseData> GetMonthsForGrid()
+        {
+            List<IZMonthCloseData> cityData = new List<IZMonthCloseData>();
+            try
+            {
+                using (FOSDataModel dbContext = new FOSDataModel())
+                {
+                    cityData = dbContext.Tbl_IZBillingPeriod
+                            .ToList().Select(
+                                u => new IZMonthCloseData
+                                {
+                                    ID = u.ID,
+                                    Name = u.Name,
+                                    IsActive = Convert.ToBoolean(u.IsActive),
+                                }).ToList();
+
+                }
+            }
+            catch (Exception exp)
+            {
+                Log.Instance.Error(exp, "Month Name Load Failed");
+                throw;
+            }
+
+            return cityData;
+        }
+
+        public static List<IZConsumerData> GetConsumerForGrid()
+        {
+            List<IZConsumerData> ConData = new List<IZConsumerData>();
+            try
+            {
+                using (FOSDataModel dbContext = new FOSDataModel())
+                {
+                    
+                    ConData = dbContext.Tbl_IZConsumers 
+                            .ToList().Select(
+                                u => new IZConsumerData
+                                {
+                                    ID = u.ID,
+                                    RefNO = u.RefNo,
+                                    PlotNo = u.PlotNo,
+                                    //blockName = 
+                                    MemberShip = u.MemberNO,
+                                    AccNO = u.AccNO,
+                                    SubAccNo = u.SubAcco,
+                                    OwnerName = u.OwnerName,
+                                    CNIC = u.CNIC,
+                                    CellNO = u.CellNo,
+                                    PhoneNO = u.PhoneNo.ToString()
+                                }).ToList();
+
+                }
+            }
+            catch (Exception exp)
+            {
+                Log.Instance.Error(exp, "Month Name Load Failed");
+                throw;
+            }
+
+            return ConData;
+        }
+
+        public static List<IZHomeData> GetCurrentMonthForGrid(int blockID, int MonthID)
+        {
+            List<IZHomeData> ConData = new List<IZHomeData>();
+            List<IZHomeData> Data = new List<IZHomeData>();
+            try
+            {
+                int cou = 0;
+                using (FOSDataModel dbContext = new FOSDataModel())
+                {
+                    //ConData = dbContext.sp_CurrentMonthReading(blockID, MonthID)
+                    //        .ToList().Select(
+                    //            u => new IZHomeData
+                    //            {
+                    //                ID = u.ID,
+                    //                Count =cou + 1 ,
+                    //                ReferenceNo = u.RefNo,
+                    //                OwnerName = u.OwnerName,
+                    //                Adress = u.Address,
+                    //                MeterNo = u.MeterNo,
+                    //                PreReading = Convert.ToDecimal(u.PreviousReading),
+                    //                CurrentReading = Convert.ToDecimal(u.MeterReading),
+                    //                UnitConsume = u.UnitConsumer,
+                    //                ReadingFeadback = u.ReadingFeedback
+                    //            }).ToList();
+
+
+                    List<sp_CurrentMonthReading_Result> cur = dbContext.sp_CurrentMonthReading(blockID, MonthID).ToList();
+
+                    foreach (var item in cur)
+                    {
+                        var hoData = new IZHomeData();
+                        hoData.ID = item.ID;
+                        hoData.ReferenceNo = item.RefNo;
+                        hoData.OwnerName = item.OwnerName;
+                        hoData.Adress = item.Address;
+                        hoData.MeterNo = item.MeterNo;
+                        hoData.PreReading = Convert.ToDecimal(item.PreviousReading);
+                        hoData.CurrentReading = Convert.ToDecimal(item.MeterReading);
+                        hoData.UnitConsume = item.UnitConsumer;
+                        hoData.ReadingFeadback = item.ReadingFeedback;
+                        Data.Add(hoData);
+                    }
+
+                }
+            }
+            catch (Exception exp)
+            {
+                Log.Instance.Error(exp, "Month Name Load Failed");
+                throw;
+            }
+
+            return Data;
+        }
+
+        public static List<IZHomeData> GetDisplaySheetForGrid(int MonthID)
+        {
+            List<IZHomeData> ConData = new List<IZHomeData>();
+            List<IZHomeData> Data = new List<IZHomeData>();
+            try
+            {
+                int cou = 0;
+                using (FOSDataModel dbContext = new FOSDataModel())
+                {
+                    //ConData = dbContext.sp_CurrentMonthReading(blockID, MonthID)
+                    //        .ToList().Select(
+                    //            u => new IZHomeData
+                    //            {
+                    //                ID = u.ID,
+                    //                Count =cou + 1 ,
+                    //                ReferenceNo = u.RefNo,
+                    //                OwnerName = u.OwnerName,
+                    //                Adress = u.Address,
+                    //                MeterNo = u.MeterNo,
+                    //                PreReading = Convert.ToDecimal(u.PreviousReading),
+                    //                CurrentReading = Convert.ToDecimal(u.MeterReading),
+                    //                UnitConsume = u.UnitConsumer,
+                    //                ReadingFeadback = u.ReadingFeedback
+                    //            }).ToList();
+
+
+                    List<sp_DisplaySheetReadingMeter_Result> cur = dbContext.sp_DisplaySheetReadingMeter(MonthID).ToList();
+
+                    foreach (var item in cur)
+                    {
+                        var hoData = new IZHomeData();
+                        hoData.ID = item.ID;
+                        hoData.ReferenceNo = item.RefNo;
+                        hoData.OwnerName = item.OwnerName;
+                        hoData.Adress = item.Address;
+                        hoData.MeterNo = item.MeterNo;
+                        hoData.PreReading = Convert.ToDecimal(item.PreviousReading);
+                        hoData.CurrentReading = Convert.ToDecimal(item.MeterReading);
+                        hoData.UnitConsume = item.UnitConsumer;
+                        hoData.ReadingFeadback = item.ReadingFeedback;
+                        hoData.Image = item.Picture1;
+                        Data.Add(hoData);
+                    }
+
+                }
+            }
+            catch (Exception exp)
+            {
+                Log.Instance.Error(exp, "Month Name Load Failed");
+                throw;
+            }
+
+            return Data;
+        }
+
 
         public static List<ZoneData> GetResultProject(string search, string sortOrder, int start, int length, List<ZoneData> dtResult, List<string> columnFilters)
         {
             return FilterResultProject(search, dtResult, columnFilters).SortBy(sortOrder).Skip(start).Take(length).ToList();
         }
 
+        public static List<IZMonthCloseData> GetResultMonth(string search, string sortOrder, int start, int length, List<IZMonthCloseData> dtResult, List<string> columnFilters)
+        {
+            return FilterResultMonth(search, dtResult, columnFilters).SortBy(sortOrder).Skip(start).Take(length).ToList();
+        }
+
+        public static List<IZConsumerData> GetResultConsumer(string search, string sortOrder, int start, int length, List<IZConsumerData> dtResult, List<string> columnFilters)
+        {
+            return FilterResultConsumer(search, dtResult, columnFilters).SortBy(sortOrder).Skip(start).Take(length).ToList();
+        }
+
+        public static List<IZHomeData> GetResultReadingCurrentMonth(string search, string sortOrder, int start, int length, List<IZHomeData> dtResult, List<string> columnFilters)
+        {
+            return FilterResultCurrentMonth(search, dtResult, columnFilters).SortBy(sortOrder).Skip(start).Take(length).ToList();
+        }
 
         public static int CountProject(string search, List<ZoneData> dtResult, List<string> columnFilters)
         {
             return FilterResultProject(search, dtResult, columnFilters).Count();
+        }
+
+        public static int CountMonth(string search, List<IZMonthCloseData> dtResult, List<string> columnFilters)
+        {
+            return FilterResultMonth(search, dtResult, columnFilters).Count();
+        }
+
+        public static int CountConsumer(string search, List<IZConsumerData> dtResult, List<string> columnFilters)
+        {
+            return FilterResultConsumer(search, dtResult, columnFilters).Count();
+        }
+
+        public static int CountCurrentMonthReading(string search, List<IZHomeData> dtResult, List<string> columnFilters)
+        {
+            return FilterResultCurrentMonth(search, dtResult, columnFilters).Count();
         }
 
         private static IQueryable<ZoneData> FilterResultProject(string search, List<ZoneData> dtResult, List<string> columnFilters)
@@ -2598,6 +2799,42 @@ namespace FOS.Setup
             IQueryable<ZoneData> results = dtResult.AsQueryable();
 
             results = results.Where(p => (search == null || (p.Name != null && p.Name.ToLower().Contains(search.ToLower())))
+
+
+                );
+
+            return results;
+        }
+
+        private static IQueryable<IZMonthCloseData> FilterResultMonth(string search, List<IZMonthCloseData> dtResult, List<string> columnFilters)
+        {
+            IQueryable<IZMonthCloseData> results = dtResult.AsQueryable();
+
+            results = results.Where(p => (search == null || (p.Name != null && p.Name.ToLower().Contains(search.ToLower())))
+
+
+                );
+
+            return results;
+        }
+
+        private static IQueryable<IZConsumerData> FilterResultConsumer(string search, List<IZConsumerData> dtResult, List<string> columnFilters)
+        {
+            IQueryable<IZConsumerData> results = dtResult.AsQueryable();
+
+            results = results.Where(p => (search == null || (p.RefNO != null && p.RefNO.ToLower().Contains(search.ToLower())))
+
+
+                );
+
+            return results;
+        }
+
+        private static IQueryable<IZHomeData> FilterResultCurrentMonth(string search, List<IZHomeData> dtResult, List<string> columnFilters)
+        {
+            IQueryable<IZHomeData> results = dtResult.AsQueryable();
+
+            results = results.Where(p => (search == null || (p.ReferenceNo != null && p.ReferenceNo.ToLower().Contains(search.ToLower())))
 
 
                 );
